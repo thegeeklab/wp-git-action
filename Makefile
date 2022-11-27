@@ -22,7 +22,7 @@ GENERATE ?=
 XGO_VERSION := go-1.19.x
 XGO_TARGETS ?= linux/amd64,linux/arm-6,linux/arm-7,linux/arm64
 
-TAGS ?= netgo
+TAGS ?= netgo osusergo
 
 ifndef VERSION
 	ifneq ($(DRONE_TAG),)
