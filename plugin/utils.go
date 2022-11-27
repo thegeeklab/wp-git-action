@@ -1,4 +1,4 @@
-package main
+package plugin
 
 import (
 	"fmt"
@@ -22,7 +22,6 @@ func execute(cmd *exec.Cmd) error {
 // helper function returns true if directory dir is empty.
 func isDirEmpty(dir string) bool {
 	f, err := os.Open(dir)
-
 	if err != nil {
 		return true
 	}

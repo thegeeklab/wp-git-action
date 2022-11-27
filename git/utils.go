@@ -1,8 +1,7 @@
-package repo
+package git
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -20,12 +19,8 @@ StrictHostKeyChecking no
 UserKnownHostsFile=/dev/null
 `
 
-// WriteKey writes the private key.
-func WriteKey(privateKey string) error {
-	if privateKey == "" {
-		return nil
-	}
-
+// WriteKey writes the SSH private key.
+func WriteSSHKey(privateKey string) error {
 	home := "/root"
 
 	if currentUser, err := user.Current(); err == nil {
@@ -36,7 +31,7 @@ func WriteKey(privateKey string) error {
 		home,
 		".ssh")
 
-	if err := os.MkdirAll(sshpath, 0700); err != nil {
+	if err := os.MkdirAll(sshpath, 0o700); err != nil {
 		return err
 	}
 
@@ -44,10 +39,10 @@ func WriteKey(privateKey string) error {
 		sshpath,
 		"config")
 
-	if err := ioutil.WriteFile(
+	if err := os.WriteFile(
 		confpath,
 		[]byte(configFile),
-		0700,
+		0o700,
 	); err != nil {
 		return err
 	}
@@ -57,10 +52,10 @@ func WriteKey(privateKey string) error {
 		"id_rsa",
 	)
 
-	if err := ioutil.WriteFile(
+	if err := os.WriteFile(
 		privpath,
 		[]byte(privateKey),
-		0600,
+		0o600,
 	); err != nil {
 		return err
 	}
@@ -92,9 +87,9 @@ func WriteNetrc(machine, login, password string) error {
 		".netrc",
 	)
 
-	return ioutil.WriteFile(
+	return os.WriteFile(
 		netpath,
 		[]byte(netrcContent),
-		0600,
+		0o600,
 	)
 }

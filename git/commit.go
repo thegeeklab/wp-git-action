@@ -1,10 +1,8 @@
-package repo
+package git
 
 import (
 	"os/exec"
 )
-
-const defaultCommitMessage = "[skip ci] Commit dirty state"
 
 // ForceAdd forces the addition of all dirty files.
 func ForceAdd() *exec.Cmd {
@@ -41,10 +39,6 @@ func TestCleanTree() *exec.Cmd {
 
 // EmptyCommit simply create an empty commit
 func EmptyCommit(msg string, noVerify bool) *exec.Cmd {
-	if msg == "" {
-		msg = defaultCommitMessage
-	}
-
 	cmd := exec.Command(
 		"git",
 		"commit",
@@ -64,10 +58,6 @@ func EmptyCommit(msg string, noVerify bool) *exec.Cmd {
 
 // ForceCommit commits every change while skipping CI.
 func ForceCommit(msg string, noVerify bool) *exec.Cmd {
-	if msg == "" {
-		msg = defaultCommitMessage
-	}
-
 	cmd := exec.Command(
 		"git",
 		"commit",

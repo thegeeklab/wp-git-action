@@ -1,44 +1,21 @@
 # drone-git-action
 
-[![Build Status](http://cloud.drone.io/api/badges/drone-plugins/drone-git-action/status.svg)](http://cloud.drone.io/drone-plugins/drone-git-action)
-[![Gitter chat](https://badges.gitter.im/drone/drone.png)](https://gitter.im/drone/drone)
-[![Join the discussion at https://discourse.drone.io](https://img.shields.io/badge/discourse-forum-orange.svg)](https://discourse.drone.io)
-[![Drone questions at https://stackoverflow.com](https://img.shields.io/badge/drone-stackoverflow-orange.svg)](https://stackoverflow.com/questions/tagged/drone.io)
-[![](https://images.microbadger.com/badges/image/plugins/git-action.svg)](https://microbadger.com/images/plugins/git-action "Get your own image badge on microbadger.com")
-[![Go Doc](https://godoc.org/github.com/drone-plugins/drone-git-action?status.svg)](http://godoc.org/github.com/drone-plugins/drone-git-action)
-[![Go Report](https://goreportcard.com/badge/github.com/drone-plugins/drone-git-action)](https://goreportcard.com/report/github.com/drone-plugins/drone-git-action)
+Drone plugin to execute git actions
 
-Drone plugin to handle Git actions like `clone`, `commit` and `push`. For the usage information and a listing of the available options please take a look at [the docs](http://plugins.drone.io/drone-plugins/drone-git-action/).
+[![Build Status](https://img.shields.io/drone/build/thegeeklab/drone-git-action?logo=drone&server=https%3A%2F%2Fdrone.thegeeklab.de)](https://drone.thegeeklab.de/thegeeklab/drone-git-action)
+[![Docker Hub](https://img.shields.io/badge/dockerhub-latest-blue.svg?logo=docker&logoColor=white)](https://hub.docker.com/r/thegeeklab/drone-git-action)
+[![Quay.io](https://img.shields.io/badge/quay-latest-blue.svg?logo=docker&logoColor=white)](https://quay.io/repository/thegeeklab/drone-git-action)
+[![Go Report Card](https://goreportcard.com/badge/github.com/thegeeklab/drone-git-action)](https://goreportcard.com/report/github.com/thegeeklab/drone-git-action)
+[![GitHub contributors](https://img.shields.io/github/contributors/thegeeklab/drone-git-action)](https://github.com/thegeeklab/drone-git-action/graphs/contributors)
+[![Source: GitHub](https://img.shields.io/badge/source-github-blue.svg?logo=github&logoColor=white)](https://github.com/thegeeklab/drone-git-action)
+[![License: Apache-2.0](https://img.shields.io/github/license/thegeeklab/drone-git-action)](https://github.com/thegeeklab/drone-git-action/blob/main/LICENSE)
 
-## Build
+Drone plugin to execute git actions. You can find the full documentation at [https://drone-plugin-index.geekdocs.de](https://drone-plugin-index.geekdocs.de/plugins/drone-git-action).
 
-Build the binary with the following command:
+## Contributors
 
-```console
-export GOOS=linux
-export GOARCH=amd64
-export CGO_ENABLED=0
-export GO111MODULE=on
+Special thanks to all [contributors](https://github.com/thegeeklab/drone-git-action/graphs/contributors). If you would like to contribute, please see the [instructions](https://github.com/thegeeklab/drone-git-action/blob/main/CONTRIBUTING.md).
 
-go build -v -a -tags netgo -o release/linux/amd64/drone-git-action
-```
+## License
 
-## Docker
-
-Build the Docker image with the following command:
-
-```console
-docker build \
-  --label org.label-schema.build-date=$(date -u +"%Y-%m-%dT%H:%M:%SZ") \
-  --label org.label-schema.vcs-ref=$(git rev-parse --short HEAD) \
-  --file docker/Dockerfile.linux.amd64 --tag plugins/git-action .
-```
-
-### Usage
-
-```console
-docker run --rm \
-  -v $(pwd):$(pwd) \
-  -w $(pwd) \
-  plugins/git-action
-```
+This project is licensed under the Apache-2.0 License - see the [LICENSE](https://github.com/thegeeklab/drone-docker/blob/main/LICENSE) file for details.
