@@ -1,0 +1,75 @@
+---
+properties:
+  - name: actions
+    description: "Git actions to to execute. Supported actions: `clone|commit|push`."
+    required: true
+    type: list
+
+  - name: author_name
+    description: Git author name.
+    required: true
+    type: string
+
+  - name: author_email
+    description: Git author Email Address.
+    required: true
+    type: string
+
+  - name: netrc_machine
+    description: Netrc remote machine name.
+    type: string
+
+  - name: netrc_username
+    description: Netrc login user on the remote machine.
+    type: string
+
+  - name: netrc_password
+    description: Netrc login password on the remote machine.
+    type: string
+
+  - name: ssh_key
+    description: SSH private key for the remote repository.
+    type: string
+
+  - name: remote
+    description: URL of the remote repository.
+    type: string
+
+  - name: branch
+    description: Name of the git branch.
+    defaultvalue: main
+    type: string
+
+  - name: path
+    description: Path to git repository.
+    type: string
+
+  - name: message
+    description: Commit message.
+    defaultvalue: "[skip ci] commit dirty state"
+    type: string
+
+  - name: force
+    description: Enable force push to remote repository.
+    defaultvalue: false
+    type: bool
+
+  - name: followtags
+    description: Push all the `refs` that would be pushed without this option, and also push annotated tags in `refs/tags` that are missing from the remote.
+    defaultvalue: false
+    type: bool
+
+  - name: skip_verify
+    description: Skip SSL verification of the remote machine.
+    defaultvalue: false
+    type: bool
+
+  - name: empty_commit
+    description: Allow empty commits. Usually recording a commit that has the exact same tree as its sole parent commit is a mistake, and those commits are not allowed by default.
+    defaultvalue: false
+    type: bool
+
+  - name: no_verify
+    description: Bypass the pre-commit and commit-msg hooks.
+    defaultvalue: false
+    type: bool

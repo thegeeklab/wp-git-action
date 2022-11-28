@@ -10,7 +10,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringSliceFlag{
 			Name:        "actions",
-			Usage:       "actions to execute",
+			Usage:       "git actions to to execute",
 			EnvVars:     []string{"PLUGIN_ACTIONS"},
 			Destination: &settings.Actions,
 			Required:    true,
@@ -36,28 +36,28 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 
 		&cli.StringFlag{
 			Name:        "netrc.machine",
-			Usage:       "netrc machine",
+			Usage:       "netrc remote machine name",
 			EnvVars:     []string{"PLUGIN_NETRC_MACHINE", "DRONE_NETRC_MACHINE"},
 			Destination: &settings.Netrc.Machine,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "netrc.username",
-			Usage:       "netrc username",
+			Usage:       "netrc login user on the remote machine",
 			EnvVars:     []string{"PLUGIN_NETRC_USERNAME", "DRONE_NETRC_USERNAME"},
 			Destination: &settings.Netrc.Login,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "netrc.password",
-			Usage:       "netrc password",
+			Usage:       "netrc login password on the remote machine",
 			EnvVars:     []string{"PLUGIN_NETRC_PASSWORD", "DRONE_NETRC_PASSWORD"},
 			Destination: &settings.Netrc.Password,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "ssh-key",
-			Usage:       "private ssh key",
+			Usage:       "ssh private key for the remote repository",
 			EnvVars:     []string{"PLUGIN_SSH_KEY"},
 			Destination: &settings.SSHKey,
 			Category:    category,
@@ -65,14 +65,14 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 
 		&cli.StringFlag{
 			Name:        "remote",
-			Usage:       "url of the repo",
+			Usage:       "url of the remote repository",
 			EnvVars:     []string{"PLUGIN_REMOTE"},
 			Destination: &settings.Remote,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "branch",
-			Usage:       "name of branch",
+			Usage:       "name of the git branch",
 			EnvVars:     []string{"PLUGIN_BRANCH"},
 			Destination: &settings.Branch,
 			Value:       "main",
@@ -81,7 +81,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 
 		&cli.StringFlag{
 			Name:        "path",
-			Usage:       "path to git repo",
+			Usage:       "path to git repository",
 			EnvVars:     []string{"PLUGIN_PATH"},
 			Destination: &settings.Path,
 			Category:    category,
@@ -98,21 +98,21 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 
 		&cli.BoolFlag{
 			Name:        "force",
-			Usage:       "force push to remote",
+			Usage:       "enable force push to remote repository",
 			EnvVars:     []string{"PLUGIN_FORCE"},
 			Destination: &settings.Force,
 			Category:    category,
 		},
 		&cli.BoolFlag{
 			Name:        "followtags",
-			Usage:       "push to remote with tags",
+			Usage:       "follow tags for pushes to remote repository",
 			EnvVars:     []string{"PLUGIN_FOLLOWTAGS"},
 			Destination: &settings.FollowTags,
 			Category:    category,
 		},
 		&cli.BoolFlag{
 			Name:        "skip-verify",
-			Usage:       "skip ssl verification",
+			Usage:       "skip ssl verification of the remote machine",
 			EnvVars:     []string{"PLUGIN_SKIP_VERIFY"},
 			Destination: &settings.SkipVerify,
 			Category:    category,
@@ -126,7 +126,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 		&cli.BoolFlag{
 			Name:        "no-verify",
-			Usage:       "bypasses commit hooks",
+			Usage:       "bypass the pre-commit and commit-msg hooks",
 			EnvVars:     []string{"PLUGIN_NO_VERIFY"},
 			Destination: &settings.NoVerify,
 			Category:    category,

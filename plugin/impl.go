@@ -44,8 +44,8 @@ type Settings struct {
 
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
-	if (p.settings.SSHKey == "") && (p.settings.Netrc.Login == "" || p.settings.Netrc.Password == "") {
-		return fmt.Errorf("either SSH key or netrc username and password are required")
+	if p.settings.SSHKey == "" && p.settings.Netrc.Password == "" {
+		return fmt.Errorf("either SSH key or netrc password are required")
 	}
 
 	return nil

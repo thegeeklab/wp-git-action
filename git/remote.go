@@ -27,7 +27,7 @@ func RemoteAdd(name, url string) *exec.Cmd {
 	return cmd
 }
 
-// RemotePush pushs the changes from the local head to a remote branch..
+// RemotePush pushs the changes from the local head to a remote branch.
 func RemotePush(remote, branch string, force, followtags bool) *exec.Cmd {
 	return RemotePushNamedBranch(remote, "HEAD", branch, force, followtags)
 }
