@@ -64,7 +64,15 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	for _, env := range []string{"GIT_AUTHOR_NAME", "GIT_AUTHOR_EMAIL"} {
+	gitEnv := []string{
+		"GIT_AUTHOR_NAME",
+		"GIT_AUTHOR_EMAIL",
+		"GIT_AUTHOR_DATE",
+		"GIT_COMMITTER_NAME",
+		"GIT_COMMITTER_EMAIL",
+		"GIT_COMMITTER_DATE",
+	}
+	for _, env := range gitEnv {
 		if err := os.Unsetenv(env); err != nil {
 			return err
 		}
