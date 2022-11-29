@@ -65,10 +65,6 @@ func WriteSSHKey(privateKey string) error {
 
 // WriteNetrc writes the netrc file.
 func WriteNetrc(machine, login, password string) error {
-	if machine == "" {
-		return nil
-	}
-
 	netrcContent := fmt.Sprintf(
 		netrcFile,
 		machine,

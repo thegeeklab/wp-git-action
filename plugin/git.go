@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 
@@ -10,7 +11,16 @@ import (
 
 // InitRepo initializes the repository.
 func (p Plugin) initRepo() error {
-	if isDirEmpty(filepath.Join(p.settings.Path, ".git")) {
+	path := filepath.Join(p.settings.Path, ".git")
+	if err := os.MkdirAll(p.settings.Path, os.ModePerm); err != nil {
+		return err
+	}
+
+	if err := os.Chdir(p.settings.Path); err != nil {
+		return err
+	}
+
+	if isDirEmpty(path) {
 		return execute(exec.Command(
 			"git",
 			"init",
@@ -53,10 +63,6 @@ func (p Plugin) checkoutHead() error {
 
 // HandleClone clones remote.
 func (p Plugin) handleClone() error {
-	if err := p.initRepo(); err != nil {
-		return err
-	}
-
 	if err := p.addRemote(); err != nil {
 		return err
 	}

@@ -17,10 +17,12 @@ properties:
 
   - name: netrc_machine
     description: Netrc remote machine name.
+    defaultvalue: github.com
     type: string
 
   - name: netrc_username
     description: Netrc login user on the remote machine.
+    defaultvalue: token
     type: string
 
   - name: netrc_password
@@ -59,8 +61,8 @@ properties:
     defaultvalue: false
     type: bool
 
-  - name: skip_verify
-    description: Skip SSL verification of the remote machine.
+  - name: insecure_ssl_verify
+    description: Configure git SSL verification of the remote machine.
     defaultvalue: false
     type: bool
 

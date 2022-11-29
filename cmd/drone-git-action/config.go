@@ -18,7 +18,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 
 		&cli.StringFlag{
-			Name:        "commit.author.name",
+			Name:        "commit-author-name",
 			Usage:       "git author name",
 			EnvVars:     []string{"PLUGIN_AUTHOR_NAME", "DRONE_COMMIT_AUTHOR"},
 			Destination: &settings.Commit.Author.Name,
@@ -26,7 +26,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 			Category:    category,
 		},
 		&cli.StringFlag{
-			Name:        "commit.author.email",
+			Name:        "commit-author-email",
 			Usage:       "git author email",
 			EnvVars:     []string{"PLUGIN_AUTHOR_EMAIL", "DRONE_COMMIT_AUTHOR_EMAIL"},
 			Destination: &settings.Commit.Author.Email,
@@ -35,21 +35,23 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 
 		&cli.StringFlag{
-			Name:        "netrc.machine",
+			Name:        "netrc-machine",
 			Usage:       "netrc remote machine name",
 			EnvVars:     []string{"PLUGIN_NETRC_MACHINE", "DRONE_NETRC_MACHINE"},
 			Destination: &settings.Netrc.Machine,
+			Value:       "github.com",
 			Category:    category,
 		},
 		&cli.StringFlag{
-			Name:        "netrc.username",
+			Name:        "netrc-username",
 			Usage:       "netrc login user on the remote machine",
 			EnvVars:     []string{"PLUGIN_NETRC_USERNAME", "DRONE_NETRC_USERNAME"},
 			Destination: &settings.Netrc.Login,
+			Value:       "token",
 			Category:    category,
 		},
 		&cli.StringFlag{
-			Name:        "netrc.password",
+			Name:        "netrc-password",
 			Usage:       "netrc login password on the remote machine",
 			EnvVars:     []string{"PLUGIN_NETRC_PASSWORD", "DRONE_NETRC_PASSWORD"},
 			Destination: &settings.Netrc.Password,
@@ -92,7 +94,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 			Usage:       "commit message",
 			EnvVars:     []string{"PLUGIN_MESSAGE"},
 			Destination: &settings.Message,
-			Value:       "[skip ci] Commit dirty state",
+			Value:       "[skip ci] commit dirty state",
 			Category:    category,
 		},
 
@@ -101,6 +103,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 			Usage:       "enable force push to remote repository",
 			EnvVars:     []string{"PLUGIN_FORCE"},
 			Destination: &settings.Force,
+			Value:       false,
 			Category:    category,
 		},
 		&cli.BoolFlag{
@@ -108,13 +111,15 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 			Usage:       "follow tags for pushes to remote repository",
 			EnvVars:     []string{"PLUGIN_FOLLOWTAGS"},
 			Destination: &settings.FollowTags,
+			Value:       false,
 			Category:    category,
 		},
 		&cli.BoolFlag{
-			Name:        "skip-verify",
-			Usage:       "skip ssl verification of the remote machine",
-			EnvVars:     []string{"PLUGIN_SKIP_VERIFY"},
-			Destination: &settings.SkipVerify,
+			Name:        "insecure-ssl-verify",
+			Usage:       "set SSL verification of the remote machine",
+			EnvVars:     []string{"PLUGIN_INSECURE_SSL_VERIFY"},
+			Destination: &settings.InsecureSSLVerify,
+			Value:       false,
 			Category:    category,
 		},
 		&cli.BoolFlag{
@@ -122,6 +127,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 			Usage:       "allow empty commits",
 			EnvVars:     []string{"PLUGIN_EMPTY_COMMIT"},
 			Destination: &settings.EmptyCommit,
+			Value:       false,
 			Category:    category,
 		},
 		&cli.BoolFlag{
@@ -129,6 +135,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 			Usage:       "bypass the pre-commit and commit-msg hooks",
 			EnvVars:     []string{"PLUGIN_NO_VERIFY"},
 			Destination: &settings.NoVerify,
+			Value:       false,
 			Category:    category,
 		},
 	}

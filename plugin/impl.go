@@ -25,17 +25,17 @@ type Author struct {
 
 // Settings for the Plugin.
 type Settings struct {
-	Actions     cli.StringSlice
-	SSHKey      string
-	Remote      string
-	Branch      string
-	Path        string
-	Message     string
-	Force       bool
-	FollowTags  bool
-	SkipVerify  bool
-	EmptyCommit bool
-	NoVerify    bool
+	Actions           cli.StringSlice
+	SSHKey            string
+	Remote            string
+	Branch            string
+	Path              string
+	Message           string
+	Force             bool
+	FollowTags        bool
+	InsecureSSLVerify bool
+	EmptyCommit       bool
+	NoVerify          bool
 
 	Netrc  Netrc
 	Commit Commit
@@ -44,8 +44,19 @@ type Settings struct {
 
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
-	if p.settings.SSHKey == "" && p.settings.Netrc.Password == "" {
-		return fmt.Errorf("either SSH key or netrc password are required")
+	for _, action := range p.settings.Actions.Value() {
+		switch action {
+		case "clone":
+			continue
+		case "commit":
+			continue
+		case "push":
+			if p.settings.SSHKey == "" && p.settings.Netrc.Password == "" {
+				return fmt.Errorf("either SSH key or netrc password are required")
+			}
+		default:
+			return fmt.Errorf("unknown action %s", action)
+		}
 	}
 
 	return nil
@@ -53,28 +64,29 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
+	for _, env := range []string{"GIT_AUTHOR_NAME", "GIT_AUTHOR_EMAIL"} {
+		if err := os.Unsetenv(env); err != nil {
+			return err
+		}
+	}
+	if err := os.Setenv("GIT_TERMINAL_PROMPT", "0"); err != nil {
+		return err
+	}
+
 	if p.settings.Path != "" {
-		if err := os.MkdirAll(p.settings.Path, os.ModePerm); err != nil {
-			return err
-		}
-
-		if err := os.Chdir(p.settings.Path); err != nil {
+		if err := p.initRepo(); err != nil {
 			return err
 		}
 	}
 
-	if err := git.GlobalName(p.settings.Commit.Author.Name).Run(); err != nil {
+	if err := git.SetUserName(p.settings.Commit.Author.Name).Run(); err != nil {
 		return err
 	}
-
-	if err := git.GlobalUser(p.settings.Commit.Author.Email).Run(); err != nil {
+	if err := git.SetUserEmail(p.settings.Commit.Author.Email).Run(); err != nil {
 		return err
 	}
-
-	if p.settings.SkipVerify {
-		if err := git.SkipVerify().Run(); err != nil {
-			return err
-		}
+	if err := git.SetSSLVerify(p.settings.InsecureSSLVerify).Run(); err != nil {
+		return err
 	}
 
 	if p.settings.SSHKey != "" {
@@ -101,8 +113,6 @@ func (p *Plugin) Execute() error {
 			if err := p.handlePush(); err != nil {
 				return err
 			}
-		default:
-			return fmt.Errorf("unknown action %s", action)
 		}
 	}
 

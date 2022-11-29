@@ -2,28 +2,41 @@ package git
 
 import (
 	"os/exec"
+	"strconv"
 )
 
-// GlobalUser sets the global git author email.
-func GlobalUser(email string) *exec.Cmd {
+// SetUserEmail sets the global git author email.
+func SetUserEmail(email string) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"config",
-		"--global",
+		"--local",
 		"user.email",
 		email)
 
 	return cmd
 }
 
-// GlobalName sets the global git author name.
-func GlobalName(author string) *exec.Cmd {
+// SetUserName sets the global git author name.
+func SetUserName(author string) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"config",
-		"--global",
+		"--local",
 		"user.name",
 		author)
+
+	return cmd
+}
+
+// SetSSLSkipVerify disables globally the git ssl verification.
+func SetSSLVerify(sslVerify bool) *exec.Cmd {
+	cmd := exec.Command(
+		"git",
+		"config",
+		"--local",
+		"http.sslVerify",
+		strconv.FormatBool(sslVerify))
 
 	return cmd
 }
