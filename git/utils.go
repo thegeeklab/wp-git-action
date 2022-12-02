@@ -3,8 +3,10 @@ package git
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
+	"strings"
 )
 
 const netrcFile = `
@@ -27,17 +29,13 @@ func WriteSSHKey(privateKey string) error {
 		home = currentUser.HomeDir
 	}
 
-	sshpath := filepath.Join(
-		home,
-		".ssh")
+	sshpath := filepath.Join(home, ".ssh")
 
 	if err := os.MkdirAll(sshpath, 0o700); err != nil {
 		return err
 	}
 
-	confpath := filepath.Join(
-		sshpath,
-		"config")
+	confpath := filepath.Join(sshpath, "config")
 
 	if err := os.WriteFile(
 		confpath,
@@ -47,10 +45,7 @@ func WriteSSHKey(privateKey string) error {
 		return err
 	}
 
-	privpath := filepath.Join(
-		sshpath,
-		"id_rsa",
-	)
+	privpath := filepath.Join(sshpath, "id_rsa")
 
 	if err := os.WriteFile(
 		privpath,
@@ -88,4 +83,21 @@ func WriteNetrc(machine, login, password string) error {
 		[]byte(netrcContent),
 		0o600,
 	)
+}
+
+func trace(cmd *exec.Cmd) {
+	fmt.Fprintf(os.Stdout, "+ %s\n", strings.Join(cmd.Args, " "))
+}
+
+func runCommand(cmd *exec.Cmd) error {
+	if cmd.Stdout == nil {
+		cmd.Stdout = os.Stdout
+	}
+
+	if cmd.Stderr == nil {
+		cmd.Stderr = os.Stderr
+	}
+
+	trace(cmd)
+	return cmd.Run()
 }

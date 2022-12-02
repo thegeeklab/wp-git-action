@@ -1,42 +1,67 @@
 package git
 
 import (
+	"os"
 	"os/exec"
 	"strconv"
 )
 
-// SetUserEmail sets the global git author email.
-func SetUserEmail(email string) *exec.Cmd {
+// repoUserEmail sets the global git author email.
+func ConfigAutocorrect(repo Repository) *exec.Cmd {
+	cmd := exec.Command(
+		"git",
+		"config",
+		"--local",
+		"help.autocorrect",
+		repo.Autocorrect,
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
+
+	return cmd
+}
+
+// repoUserEmail sets the global git author email.
+func ConfigUserEmail(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"config",
 		"--local",
 		"user.email",
-		email)
+		repo.Author.Email,
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
 	return cmd
 }
 
-// SetUserName sets the global git author name.
-func SetUserName(author string) *exec.Cmd {
+// repoUserName sets the global git author name.
+func ConfigUserName(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"config",
 		"--local",
 		"user.name",
-		author)
+		repo.Author.Name,
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
 	return cmd
 }
 
-// SetSSLSkipVerify disables globally the git ssl verification.
-func SetSSLVerify(sslVerify bool) *exec.Cmd {
+// repoSSLVerify disables globally the git ssl verification.
+func ConfigSSLVerify(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"config",
 		"--local",
 		"http.sslVerify",
-		strconv.FormatBool(sslVerify))
+		strconv.FormatBool(repo.SSLVerify),
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
 	return cmd
 }

@@ -24,9 +24,12 @@ kind: pipeline
 name: default
 
 steps:
-  - name: commit artifact
+  - name: commit changelog
     image: thegeeklab/drone-git-action
     settings:
+      action:
+        - commit
+        - push
       netrc_password: ghp_3LbMg9Kncpdkhjp3bh3dMnKNXLjVMTsXk4sM
       author_name: octobot
       author_email: octobot@example.com
@@ -40,6 +43,30 @@ steps:
 {{< propertylist name=drone-git-action.data sort=name >}}
 <!-- spellchecker-enable -->
 <!-- prettier-ignore-end -->
+
+### Examples
+
+#### Publish GitHub pages
+
+The plugin can be used to publish GitHub pages to the pages branch. Remember that the `pages` action cannot be combined with other actions.
+
+```YAML
+kind: pipeline
+name: default
+
+steps:
+  - name: publish
+    image: thegeeklab/drone-git-action
+    settings:
+      action:
+        - pages
+      author_email: bot@thegeeklab.de
+      author_name: thegeeklab-bot
+      message: "update pages"
+      branch: gh-pages
+      pages_directory: docs/
+      netrc_password: ghp_3LbMg9Kncpdkhjp3bh3dMnKNXLjVMTsXk4sM
+```
 
 ## Build
 

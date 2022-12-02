@@ -7,7 +7,7 @@ LABEL org.opencontainers.image.url="https://github.com/thegeeklab/drone-git-acti
 LABEL org.opencontainers.image.source="https://github.com/thegeeklab/drone-git-action"
 LABEL org.opencontainers.image.documentation="https://github.com/thegeeklab/drone-git-action"
 
-RUN apk --update add --no-cache git && \
+RUN apk --update add --no-cache git rsync && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/*
 

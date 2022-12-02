@@ -2,10 +2,11 @@ package plugin
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/thegeeklab/drone-git-action/git"
 )
 
 // helper function to simply wrap os execte command.
@@ -19,15 +20,39 @@ func execute(cmd *exec.Cmd) error {
 	return cmd.Run()
 }
 
-// helper function returns true if directory dir is empty.
-func isDirEmpty(dir string) bool {
-	f, err := os.Open(dir)
-	if err != nil {
-		return true
+func rsyncDirectories(pages Pages, repo git.Repository) *exec.Cmd {
+	args := []string{
+		"-r",
+		"--exclude",
+		".git",
 	}
 
-	defer f.Close()
+	for _, item := range pages.Exclude.Value() {
+		args = append(
+			args,
+			"--exclude",
+			item,
+		)
+	}
 
-	_, err = f.Readdir(1)
-	return err == io.EOF
+	if pages.Delete {
+		args = append(
+			args,
+			"--delete",
+		)
+	}
+
+	args = append(
+		args,
+		".",
+		repo.WorkDir,
+	)
+
+	cmd := exec.Command(
+		"rsync",
+		args...,
+	)
+	cmd.Dir = pages.Directory
+
+	return cmd
 }

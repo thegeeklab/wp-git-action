@@ -1,52 +1,59 @@
 package git
 
 import (
+	"fmt"
+	"os"
 	"os/exec"
 )
 
 // RemoteRemove drops the defined remote from a git repo.
-func RemoteRemove(name string) *exec.Cmd {
+func RemoteRemove(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"remote",
 		"rm",
-		name)
+		repo.RemoteName,
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
 	return cmd
 }
 
 // RemoteAdd adds an additional remote to a git repo.
-func RemoteAdd(name, url string) *exec.Cmd {
+func RemoteAdd(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"remote",
 		"add",
-		name,
-		url)
+		repo.RemoteName,
+		repo.RemoteURL,
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
 	return cmd
 }
 
 // RemotePush pushs the changes from the local head to a remote branch.
-func RemotePush(remote, branch string, force, followtags bool) *exec.Cmd {
-	return RemotePushNamedBranch(remote, "HEAD", branch, force, followtags)
-}
-
-// RemotePushNamedBranch puchs changes from a local to a remote branch.
-func RemotePushNamedBranch(remote, localbranch, branch string, force, followtags bool) *exec.Cmd {
+func RemotePush(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"push",
-		remote,
-		localbranch+":"+branch)
+		repo.RemoteName,
+		fmt.Sprintf("HEAD:%s", repo.Branch),
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
-	if force {
+	if repo.ForcePush {
 		cmd.Args = append(
 			cmd.Args,
-			"--force")
+			"--force",
+		)
 	}
 
-	if followtags {
+	if repo.PushFollowTags {
 		cmd.Args = append(
 			cmd.Args,
 			"--follow-tags")

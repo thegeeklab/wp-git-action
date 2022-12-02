@@ -1,74 +1,89 @@
 package git
 
 import (
+	"os"
 	"os/exec"
 )
 
 // ForceAdd forces the addition of all dirty files.
-func ForceAdd() *exec.Cmd {
+func ForceAdd(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"add",
 		"--all",
-		"--force")
+		"--force",
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
 	return cmd
 }
 
 // Add updates the index to match the working tree.
-func Add() *exec.Cmd {
+func Add(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"add",
-		"--all")
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
+
+	if repo.Add != "" {
+		cmd.Args = append(cmd.Args, repo.Add)
+	} else {
+		cmd.Args = append(cmd.Args, "--all")
+	}
 
 	return cmd
 }
 
 // TestCleanTree returns non-zero if diff between index and local repository
-func TestCleanTree() *exec.Cmd {
+func TestCleanTree(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"diff-index",
 		"--quiet",
 		"HEAD",
-		"--ignore-submodules")
+		"--ignore-submodules",
+	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
 	return cmd
 }
 
 // EmptyCommit simply create an empty commit
-func EmptyCommit(msg string, noVerify bool) *exec.Cmd {
+func EmptyCommit(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"commit",
 		"--allow-empty",
 		"-m",
-		msg,
+		repo.CommitMsg,
 	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
-	if noVerify {
-		cmd.Args = append(
-			cmd.Args,
-			"--no-verify")
+	if repo.NoVerify {
+		cmd.Args = append(cmd.Args, "--no-verify")
 	}
 
 	return cmd
 }
 
 // ForceCommit commits every change while skipping CI.
-func ForceCommit(msg string, noVerify bool) *exec.Cmd {
+func ForceCommit(repo Repository) *exec.Cmd {
 	cmd := exec.Command(
 		"git",
 		"commit",
 		"-m",
-		msg,
+		repo.CommitMsg,
 	)
+	cmd.Dir = repo.WorkDir
+	cmd.Stderr = os.Stderr
 
-	if noVerify {
-		cmd.Args = append(
-			cmd.Args,
-			"--no-verify")
+	if repo.NoVerify {
+		cmd.Args = append(cmd.Args, "--no-verify")
 	}
 
 	return cmd
