@@ -65,9 +65,9 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 
 		&cli.StringFlag{
-			Name:        "remote",
+			Name:        "remote-url",
 			Usage:       "url of the remote repository",
-			EnvVars:     []string{"PLUGIN_REMOTE", "DRONE_REMOTE_URL"},
+			EnvVars:     []string{"PLUGIN_REMOTE_URL", "DRONE_REMOTE_URL"},
 			Destination: &settings.Repo.RemoteURL,
 			Category:    category,
 		},
