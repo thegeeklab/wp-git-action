@@ -347,7 +347,7 @@ steps:
         - pages
       author_email: bot@thegeeklab.de
       author_name: thegeeklab-bot
-      branch: gh-pages
+      branch: docs
       message: auto-update documentation
       netrc_password:
         from_secret: github_token
@@ -460,6 +460,6 @@ depends_on:
 
 ---
 kind: signature
-hmac: 89079eef07225acb12f8eeab92f29de04b4a46340ba265b6a9c9bfc6c75c18aa
+hmac: 206e1ad1bc3a7bbb506d58fea0482e5cd37fa5e7cf6e71f347426e2b167d131a
 
 ...
