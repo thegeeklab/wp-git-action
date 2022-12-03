@@ -228,10 +228,15 @@ local PipelineDocs = {
       name: 'publish',
       image: 'plugins/gh-pages',
       settings: {
-        username: { from_secret: 'github_username' },
-        password: { from_secret: 'github_token' },
-        pages_directory: '_docs/',
-        target_branch: 'docs',
+        action: [
+          'pages',
+        ],
+        author_email: 'bot@thegeeklab.de',
+        author_name: 'thegeeklab-bot',
+        message: 'auto-update documentation',
+        branch: 'gh-pages',
+        pages_directory: 'docs/',
+        netrc_password: { from_secret: 'github_token' },
       },
       when: {
         ref: ['refs/heads/main'],

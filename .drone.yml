@@ -343,12 +343,15 @@ steps:
   - name: publish
     image: plugins/gh-pages
     settings:
-      pages_directory: _docs/
-      password:
+      action:
+        - pages
+      author_email: bot@thegeeklab.de
+      author_name: thegeeklab-bot
+      branch: gh-pages
+      message: auto-update documentation
+      netrc_password:
         from_secret: github_token
-      target_branch: docs
-      username:
-        from_secret: github_username
+      pages_directory: docs/
     when:
       ref:
         - refs/heads/main
@@ -457,6 +460,6 @@ depends_on:
 
 ---
 kind: signature
-hmac: 7e8f9c0185f2416c4250a175458905fe516c706a9dd4b0d38c201b22bc5b1b3d
+hmac: 89079eef07225acb12f8eeab92f29de04b4a46340ba265b6a9c9bfc6c75c18aa
 
 ...
