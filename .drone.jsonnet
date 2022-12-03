@@ -226,7 +226,7 @@ local PipelineDocs = {
     },
     {
       name: 'publish',
-      image: 'plugins/gh-pages',
+      image: 'thegeeklab/drone-git-action',
       settings: {
         action: [
           'pages',

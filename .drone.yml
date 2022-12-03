@@ -341,7 +341,7 @@ steps:
       NPM_CONFIG_LOGLEVEL: error
 
   - name: publish
-    image: plugins/gh-pages
+    image: thegeeklab/drone-git-action
     settings:
       action:
         - pages
@@ -460,6 +460,6 @@ depends_on:
 
 ---
 kind: signature
-hmac: 206e1ad1bc3a7bbb506d58fea0482e5cd37fa5e7cf6e71f347426e2b167d131a
+hmac: 7a4d6d3de048b4a826a4c908503f0d69d7ad6abf2bcc631c0b6ac5666f1d3753
 
 ...
