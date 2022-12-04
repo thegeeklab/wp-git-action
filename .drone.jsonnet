@@ -235,7 +235,7 @@ local PipelineDocs = {
         author_name: 'thegeeklab-bot',
         message: 'auto-update documentation',
         branch: 'docs',
-        pages_directory: 'docs/',
+        pages_directory: '_docs/',
         netrc_password: { from_secret: 'github_token' },
       },
       when: {

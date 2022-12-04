@@ -351,7 +351,7 @@ steps:
       message: auto-update documentation
       netrc_password:
         from_secret: github_token
-      pages_directory: docs/
+      pages_directory: _docs/
     when:
       ref:
         - refs/heads/main
@@ -460,6 +460,6 @@ depends_on:
 
 ---
 kind: signature
-hmac: 7a4d6d3de048b4a826a4c908503f0d69d7ad6abf2bcc631c0b6ac5666f1d3753
+hmac: 2bc7a7e473ccadc295bd6a071d901f48f18ab0c69d8306c513dbbe02969db9fc
 
 ...
