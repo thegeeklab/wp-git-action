@@ -244,79 +244,6 @@ depends_on:
 
 ---
 kind: pipeline
-name: build-container-arm
-
-platform:
-  os: linux
-  arch: arm
-
-steps:
-  - name: build
-    image: golang:1.19
-    commands:
-      - make build
-      - ls -l dist/drone-git-action
-
-  - name: dryrun
-    image: thegeeklab/drone-docker:19
-    settings:
-      dockerfile: docker/Dockerfile.arm
-      dry_run: true
-      repo: thegeeklab/${DRONE_REPO_NAME}
-    when:
-      ref:
-        - refs/pull/**
-    depends_on:
-      - build
-
-  - name: publish-dockerhub
-    image: thegeeklab/drone-docker:19
-    settings:
-      auto_tag: true
-      auto_tag_suffix: arm
-      dockerfile: docker/Dockerfile.arm
-      password:
-        from_secret: docker_password
-      repo: thegeeklab/${DRONE_REPO_NAME}
-      username:
-        from_secret: docker_username
-    when:
-      ref:
-        - refs/heads/main
-        - refs/tags/**
-    depends_on:
-      - dryrun
-
-  - name: publish-quay
-    image: thegeeklab/drone-docker:19
-    settings:
-      auto_tag: true
-      auto_tag_suffix: arm
-      dockerfile: docker/Dockerfile.arm
-      password:
-        from_secret: quay_password
-      registry: quay.io
-      repo: quay.io/thegeeklab/${DRONE_REPO_NAME}
-      username:
-        from_secret: quay_username
-    when:
-      ref:
-        - refs/heads/main
-        - refs/tags/**
-    depends_on:
-      - dryrun
-
-trigger:
-  ref:
-    - refs/heads/main
-    - refs/tags/**
-    - refs/pull/**
-
-depends_on:
-  - test
-
----
-kind: pipeline
 name: docs
 
 platform:
@@ -366,7 +293,6 @@ depends_on:
   - build-binaries
   - build-container-amd64
   - build-container-arm64
-  - build-container-arm
 
 ---
 kind: pipeline
@@ -460,6 +386,6 @@ depends_on:
 
 ---
 kind: signature
-hmac: 2bc7a7e473ccadc295bd6a071d901f48f18ab0c69d8306c513dbbe02969db9fc
+hmac: e987759fd94fe86d9420716668d6de2a03c637a3c11521380f1aee81b416458f
 
 ...
