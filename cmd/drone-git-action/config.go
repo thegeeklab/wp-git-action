@@ -10,7 +10,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringSliceFlag{
 			Name:        "action",
-			Usage:       "git action to to execute",
+			Usage:       "git action to execute",
 			EnvVars:     []string{"PLUGIN_ACTION"},
 			Destination: &settings.Action,
 			Required:    true,

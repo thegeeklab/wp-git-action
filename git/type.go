@@ -25,3 +25,5 @@ type Repository struct {
 
 	Author Author
 }
+
+const gitBin = "/usr/bin/git"

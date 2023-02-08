@@ -2,14 +2,15 @@ package git
 
 import (
 	"bytes"
-	"fmt"
 	"os"
-	"os/exec"
+
+	"github.com/sirupsen/logrus"
+	"golang.org/x/sys/execabs"
 )
 
-func Status(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func Status(repo Repository) *execabs.Cmd {
+	cmd := execabs.Command(
+		gitBin,
 		"status",
 		"--porcelain",
 	)
@@ -34,7 +35,8 @@ func IsDirty(repo Repository) bool {
 	}
 
 	if res.Len() > 0 {
-		fmt.Print(res.String())
+		logrus.Debug(res.String())
+
 		return true
 	}
 

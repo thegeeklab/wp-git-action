@@ -2,18 +2,23 @@ package git
 
 import (
 	"os"
-	"os/exec"
 	"strconv"
+
+	"golang.org/x/sys/execabs"
 )
 
 // repoUserEmail sets the global git author email.
-func ConfigAutocorrect(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func ConfigAutocorrect(repo Repository) *execabs.Cmd {
+	args := []string{
 		"config",
 		"--local",
 		"help.autocorrect",
 		repo.Autocorrect,
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr
@@ -22,13 +27,17 @@ func ConfigAutocorrect(repo Repository) *exec.Cmd {
 }
 
 // repoUserEmail sets the global git author email.
-func ConfigUserEmail(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func ConfigUserEmail(repo Repository) *execabs.Cmd {
+	args := []string{
 		"config",
 		"--local",
 		"user.email",
 		repo.Author.Email,
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr
@@ -37,13 +46,17 @@ func ConfigUserEmail(repo Repository) *exec.Cmd {
 }
 
 // repoUserName sets the global git author name.
-func ConfigUserName(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func ConfigUserName(repo Repository) *execabs.Cmd {
+	args := []string{
 		"config",
 		"--local",
 		"user.name",
 		repo.Author.Name,
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr
@@ -52,13 +65,17 @@ func ConfigUserName(repo Repository) *exec.Cmd {
 }
 
 // repoSSLVerify disables globally the git ssl verification.
-func ConfigSSLVerify(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func ConfigSSLVerify(repo Repository) *execabs.Cmd {
+	args := []string{
 		"config",
 		"--local",
 		"http.sslVerify",
 		strconv.FormatBool(repo.SSLVerify),
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr

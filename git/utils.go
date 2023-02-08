@@ -3,23 +3,30 @@ package git
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"os/user"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/sys/execabs"
 )
 
-const netrcFile = `
+const (
+	netrcFile = `
 machine %s
 login %s
 password %s
 `
-
-const configFile = `
+	configFile = `
 Host *
 StrictHostKeyChecking no
 UserKnownHostsFile=/dev/null
 `
+)
+
+const (
+	strictFilePerm = 0o600
+	strictDirPerm  = 0o600
+)
 
 // WriteKey writes the SSH private key.
 func WriteSSHKey(privateKey string) error {
@@ -31,7 +38,7 @@ func WriteSSHKey(privateKey string) error {
 
 	sshpath := filepath.Join(home, ".ssh")
 
-	if err := os.MkdirAll(sshpath, 0o700); err != nil {
+	if err := os.MkdirAll(sshpath, strictDirPerm); err != nil {
 		return err
 	}
 
@@ -40,7 +47,7 @@ func WriteSSHKey(privateKey string) error {
 	if err := os.WriteFile(
 		confpath,
 		[]byte(configFile),
-		0o700,
+		strictFilePerm,
 	); err != nil {
 		return err
 	}
@@ -50,7 +57,7 @@ func WriteSSHKey(privateKey string) error {
 	if err := os.WriteFile(
 		privpath,
 		[]byte(privateKey),
-		0o600,
+		strictFilePerm,
 	); err != nil {
 		return err
 	}
@@ -81,15 +88,15 @@ func WriteNetrc(machine, login, password string) error {
 	return os.WriteFile(
 		netpath,
 		[]byte(netrcContent),
-		0o600,
+		strictFilePerm,
 	)
 }
 
-func trace(cmd *exec.Cmd) {
+func trace(cmd *execabs.Cmd) {
 	fmt.Fprintf(os.Stdout, "+ %s\n", strings.Join(cmd.Args, " "))
 }
 
-func runCommand(cmd *exec.Cmd) error {
+func runCommand(cmd *execabs.Cmd) error {
 	if cmd.Stdout == nil {
 		cmd.Stdout = os.Stdout
 	}
@@ -99,5 +106,6 @@ func runCommand(cmd *exec.Cmd) error {
 	}
 
 	trace(cmd)
+
 	return cmd.Run()
 }

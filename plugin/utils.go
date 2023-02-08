@@ -1,17 +1,17 @@
 package plugin
 
 import (
-	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
+	"github.com/sirupsen/logrus"
 	"github.com/thegeeklab/drone-git-action/git"
+	"golang.org/x/sys/execabs"
 )
 
 // helper function to simply wrap os execte command.
-func execute(cmd *exec.Cmd) error {
-	fmt.Println("+", strings.Join(cmd.Args, " "))
+func execute(cmd *execabs.Cmd) error {
+	logrus.Debug("+", strings.Join(cmd.Args, " "))
 
 	cmd.Env = os.Environ()
 	cmd.Stderr = os.Stderr
@@ -20,7 +20,7 @@ func execute(cmd *exec.Cmd) error {
 	return cmd.Run()
 }
 
-func rsyncDirectories(pages Pages, repo git.Repository) *exec.Cmd {
+func rsyncDirectories(pages Pages, repo git.Repository) *execabs.Cmd {
 	args := []string{
 		"-r",
 		"--exclude",
@@ -48,7 +48,7 @@ func rsyncDirectories(pages Pages, repo git.Repository) *exec.Cmd {
 		repo.WorkDir,
 	)
 
-	cmd := exec.Command(
+	cmd := execabs.Command(
 		"rsync",
 		args...,
 	)

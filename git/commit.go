@@ -2,13 +2,14 @@ package git
 
 import (
 	"os"
-	"os/exec"
+
+	"golang.org/x/sys/execabs"
 )
 
 // ForceAdd forces the addition of all dirty files.
-func ForceAdd(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func ForceAdd(repo Repository) *execabs.Cmd {
+	cmd := execabs.Command(
+		gitBin,
 		"add",
 		"--all",
 		"--force",
@@ -20,9 +21,9 @@ func ForceAdd(repo Repository) *exec.Cmd {
 }
 
 // Add updates the index to match the working tree.
-func Add(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func Add(repo Repository) *execabs.Cmd {
+	cmd := execabs.Command(
+		gitBin,
 		"add",
 	)
 	cmd.Dir = repo.WorkDir
@@ -37,10 +38,10 @@ func Add(repo Repository) *exec.Cmd {
 	return cmd
 }
 
-// TestCleanTree returns non-zero if diff between index and local repository
-func TestCleanTree(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+// TestCleanTree returns non-zero if diff between index and local repository.
+func TestCleanTree(repo Repository) *execabs.Cmd {
+	cmd := execabs.Command(
+		gitBin,
 		"diff-index",
 		"--quiet",
 		"HEAD",
@@ -52,14 +53,18 @@ func TestCleanTree(repo Repository) *exec.Cmd {
 	return cmd
 }
 
-// EmptyCommit simply create an empty commit
-func EmptyCommit(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+// EmptyCommit simply create an empty commit.
+func EmptyCommit(repo Repository) *execabs.Cmd {
+	args := []string{
 		"commit",
 		"--allow-empty",
 		"-m",
 		repo.CommitMsg,
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr
@@ -72,12 +77,16 @@ func EmptyCommit(repo Repository) *exec.Cmd {
 }
 
 // ForceCommit commits every change while skipping CI.
-func ForceCommit(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func ForceCommit(repo Repository) *execabs.Cmd {
+	args := []string{
 		"commit",
 		"-m",
 		repo.CommitMsg,
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr

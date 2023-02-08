@@ -1,9 +1,9 @@
 package plugin
 
 import (
+	"errors"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"github.com/thegeeklab/drone-git-action/git"
@@ -32,6 +32,16 @@ type Settings struct {
 	Repo  git.Repository
 }
 
+var (
+	ErrAuthSourceNotSet           = errors.New("either SSH key or netrc password is required")
+	ErrPagesDirectoryNotExist     = errors.New("pages directory must exist")
+	ErrPagesDirectoryNotValid     = errors.New("pages directory not valid")
+	ErrPagesSourceNotSet          = errors.New("pages source directory must be set")
+	ErrPagesActionNotExclusive    = errors.New("pages action is mutual exclusive")
+	ErrActionUnknown              = errors.New("action not found")
+	ErrGitCloneDestintionNotValid = errors.New("destination not valid")
+)
+
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
 	var err error
@@ -43,6 +53,7 @@ func (p *Plugin) Validate() error {
 	if p.settings.Repo.WorkDir == "" {
 		p.settings.Repo.WorkDir, err = os.Getwd()
 	}
+
 	if err != nil {
 		return err
 	}
@@ -55,33 +66,33 @@ func (p *Plugin) Validate() error {
 			continue
 		case "push":
 			if p.settings.SSHKey == "" && p.settings.Netrc.Password == "" {
-				return fmt.Errorf("either SSH key or netrc password is required")
+				return ErrAuthSourceNotSet
 			}
 		case "pages":
 			p.settings.Pages.Directory = filepath.Join(p.settings.Repo.WorkDir, p.settings.Pages.Directory)
 			p.settings.Repo.WorkDir = filepath.Join(p.settings.Repo.WorkDir, ".tmp")
 
 			if _, err := os.Stat(p.settings.Pages.Directory); os.IsNotExist(err) {
-				return fmt.Errorf("pages directory '%s' must exist", p.settings.Pages.Directory)
+				return fmt.Errorf("%w: '%s' not found", ErrPagesDirectoryNotExist, p.settings.Pages.Directory)
 			}
 
 			if info, _ := os.Stat(p.settings.Pages.Directory); !info.IsDir() {
-				return fmt.Errorf("pages directory '%s' is not a directory", p.settings.Pages.Directory)
+				return fmt.Errorf("%w: '%s' not a directory", ErrPagesDirectoryNotValid, p.settings.Pages.Directory)
 			}
 
 			if p.settings.SSHKey == "" && p.settings.Netrc.Password == "" {
-				return fmt.Errorf("either SSH key or netrc password is required")
+				return ErrAuthSourceNotSet
 			}
 
 			if p.settings.Pages.Directory == "" {
-				return fmt.Errorf("pages source directory needs to be set")
+				return ErrPagesSourceNotSet
 			}
 
 			if len(p.settings.Action.Value()) > 1 {
-				return fmt.Errorf("pages action can not be combined with other actions")
+				return ErrPagesActionNotExclusive
 			}
 		default:
-			return fmt.Errorf("unknown action %s", action)
+			return fmt.Errorf("%w: %s", ErrActionUnknown, action)
 		}
 	}
 
@@ -98,28 +109,33 @@ func (p *Plugin) Execute() error {
 		"GIT_COMMITTER_EMAIL",
 		"GIT_COMMITTER_DATE",
 	}
+
 	for _, env := range gitEnv {
 		if err := os.Unsetenv(env); err != nil {
 			return err
 		}
 	}
+
 	if err := os.Setenv("GIT_TERMINAL_PROMPT", "0"); err != nil {
 		return err
 	}
 
-	if err := p.initRepo(); err != nil {
+	if err := p.handleInit(); err != nil {
 		return err
 	}
 
 	if err := git.ConfigAutocorrect(p.settings.Repo).Run(); err != nil {
 		return err
 	}
+
 	if err := git.ConfigUserName(p.settings.Repo).Run(); err != nil {
 		return err
 	}
+
 	if err := git.ConfigUserEmail(p.settings.Repo).Run(); err != nil {
 		return err
 	}
+
 	if err := git.ConfigSSLVerify(p.settings.Repo).Run(); err != nil {
 		return err
 	}
@@ -158,31 +174,31 @@ func (p *Plugin) Execute() error {
 	return nil
 }
 
-// InitRepo initializes the repository.
-func (p *Plugin) initRepo() error {
+// handleInit initializes the repository.
+func (p *Plugin) handleInit() error {
 	path := filepath.Join(p.settings.Repo.WorkDir, ".git")
+
 	if err := os.MkdirAll(p.settings.Repo.WorkDir, os.ModePerm); err != nil {
 		return err
 	}
 
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		p.settings.Repo.InitExists = true
+
 		return nil
 	}
 
-	cmd := exec.Command(
-		"git",
-		"init",
-	)
-	cmd.Dir = p.settings.Repo.WorkDir
+	if err := execute(git.Init(p.settings.Repo)); err != nil {
+		return err
+	}
 
-	return execute(cmd)
+	return nil
 }
 
 // HandleClone clones remote.
 func (p *Plugin) handleClone() error {
 	if p.settings.Repo.InitExists {
-		return fmt.Errorf("destination '%s' already exists and is not an empty directory", p.settings.Repo.WorkDir)
+		return fmt.Errorf("%w: %s exists and not empty", ErrGitCloneDestintionNotValid, p.settings.Repo.WorkDir)
 	}
 
 	if p.settings.Repo.RemoteURL != "" {
@@ -212,11 +228,11 @@ func (p *Plugin) handleCommit() error {
 		if err := execute(git.ForceCommit(p.settings.Repo)); err != nil {
 			return err
 		}
-	} else {
-		if p.settings.Repo.EmptyCommit {
-			if err := execute(git.EmptyCommit(p.settings.Repo)); err != nil {
-				return err
-			}
+	}
+
+	if p.settings.Repo.EmptyCommit {
+		if err := execute(git.EmptyCommit(p.settings.Repo)); err != nil {
+			return err
 		}
 	}
 

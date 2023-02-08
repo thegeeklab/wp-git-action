@@ -3,16 +3,21 @@ package git
 import (
 	"fmt"
 	"os"
-	"os/exec"
+
+	"golang.org/x/sys/execabs"
 )
 
 // RemoteRemove drops the defined remote from a git repo.
-func RemoteRemove(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func RemoteRemove(repo Repository) *execabs.Cmd {
+	args := []string{
 		"remote",
 		"rm",
 		repo.RemoteName,
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr
@@ -21,13 +26,17 @@ func RemoteRemove(repo Repository) *exec.Cmd {
 }
 
 // RemoteAdd adds an additional remote to a git repo.
-func RemoteAdd(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func RemoteAdd(repo Repository) *execabs.Cmd {
+	args := []string{
 		"remote",
 		"add",
 		repo.RemoteName,
 		repo.RemoteURL,
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr
@@ -36,12 +45,16 @@ func RemoteAdd(repo Repository) *exec.Cmd {
 }
 
 // RemotePush pushs the changes from the local head to a remote branch.
-func RemotePush(repo Repository) *exec.Cmd {
-	cmd := exec.Command(
-		"git",
+func RemotePush(repo Repository) *execabs.Cmd {
+	args := []string{
 		"push",
 		repo.RemoteName,
 		fmt.Sprintf("HEAD:%s", repo.Branch),
+	}
+
+	cmd := execabs.Command(
+		gitBin,
+		args...,
 	)
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr
