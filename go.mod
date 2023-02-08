@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/joho/godotenv v1.5.1
 	github.com/sirupsen/logrus v1.9.0
-	github.com/thegeeklab/drone-plugin-lib/v2 v2.2.1
+	github.com/thegeeklab/drone-plugin-lib/v2 v2.3.1
 	github.com/urfave/cli/v2 v2.24.3
 	golang.org/x/sys v0.5.0
 )
