@@ -18,4 +18,4 @@ Special thanks to all [contributors](https://github.com/thegeeklab/drone-git-act
 
 ## License
 
-This project is licensed under the Apache-2.0 License - see the [LICENSE](https://github.com/thegeeklab/drone-docker/blob/main/LICENSE) file for details.
+This project is licensed under the Apache-2.0 License - see the [LICENSE](https://github.com/thegeeklab/drone-git-action/blob/main/LICENSE) file for details.
