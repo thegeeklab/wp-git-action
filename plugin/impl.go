@@ -188,11 +188,7 @@ func (p *Plugin) handleInit() error {
 		return nil
 	}
 
-	if err := execute(git.Init(p.settings.Repo)); err != nil {
-		return err
-	}
-
-	return nil
+	return execute(git.Init(p.settings.Repo))
 }
 
 // HandleClone clones remote.
@@ -211,11 +207,7 @@ func (p *Plugin) handleClone() error {
 		return err
 	}
 
-	if err := execute(git.CheckoutHead(p.settings.Repo)); err != nil {
-		return err
-	}
-
-	return nil
+	return execute(git.CheckoutHead(p.settings.Repo))
 }
 
 // HandleCommit commits changes locally.

@@ -54,15 +54,11 @@ func WriteSSHKey(privateKey string) error {
 
 	privpath := filepath.Join(sshpath, "id_rsa")
 
-	if err := os.WriteFile(
+	return os.WriteFile(
 		privpath,
 		[]byte(privateKey),
 		strictFilePerm,
-	); err != nil {
-		return err
-	}
-
-	return nil
+	)
 }
 
 // WriteNetrc writes the netrc file.
