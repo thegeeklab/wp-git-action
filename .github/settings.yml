@@ -1,8 +1,8 @@
 repository:
-  name: drone-git-action
-  description: Drone plugin to execute git actions
-  homepage: https://drone-plugin-index.geekdocs.de/plugins/drone-git-action
-  topics: drone, drone-plugin
+  name: wp-git-action
+  description: Woodpecker CI plugin to execute git actions
+  homepage: https://wp-plugin-index.geekdocs.de/plugins/wp-git-action
+  topics: woodpecker, wp-plugin
 
   private: false
   has_issues: true
@@ -51,8 +51,11 @@ branches:
       required_status_checks:
         strict: false
         contexts:
-          - continuous-integration/drone/pr
-      enforce_admins: true
+          - ci/woodpecker/pr/test
+          - ci/woodpecker/pr/build-binary
+          - ci/woodpecker/pr/build-container
+          - ci/woodpecker/pr/docs
+      enforce_admins: false
       required_linear_history: true
       restrictions: null
   - name: docs

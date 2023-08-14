@@ -5,8 +5,8 @@ properties:
       Git actions to be executed. Supported actions: `clone | commit | push | pages`. Specified actions are executed in the specified order
 
       - **clone:** Clones the repository in `remote_url` and checks out the `branch` to `path`.
-      - **commit:** Adds a commit to the default drone repository or the repository in `remote_url`.
-      - **push:** Pushes all commits to the default drone repository or the repository set in `remote_url`.
+      - **commit:** Adds a commit to the default repository or the repository in `remote_url`.
+      - **push:** Pushes all commits to the default repository or the repository set in `remote_url`.
       - **pages:** The `pages` action is a special action that cannot be combined with other actions. It is intended for use for
         GitHub pages. It synchronizes the contents of `pages_directory` with the target `branch` using `rsync` and pushes the changes automatically.
     required: true

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/thegeeklab/drone-git-action/plugin"
+	"github.com/thegeeklab/wp-git-action/plugin"
 	"github.com/urfave/cli/v2"
 )
 
@@ -19,7 +19,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		&cli.StringFlag{
 			Name:        "author-name",
 			Usage:       "git author name",
-			EnvVars:     []string{"PLUGIN_AUTHOR_NAME", "DRONE_COMMIT_AUTHOR"},
+			EnvVars:     []string{"PLUGIN_AUTHOR_NAME", "CI_COMMIT_AUTHOR"},
 			Destination: &settings.Repo.Author.Name,
 			Required:    true,
 			Category:    category,
@@ -27,7 +27,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		&cli.StringFlag{
 			Name:        "author-email",
 			Usage:       "git author email",
-			EnvVars:     []string{"PLUGIN_AUTHOR_EMAIL", "DRONE_COMMIT_AUTHOR_EMAIL"},
+			EnvVars:     []string{"PLUGIN_AUTHOR_EMAIL", "CI_COMMIT_AUTHOR_EMAIL"},
 			Destination: &settings.Repo.Author.Email,
 			Required:    true,
 			Category:    category,
@@ -36,7 +36,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		&cli.StringFlag{
 			Name:        "netrc.machine",
 			Usage:       "netrc remote machine name",
-			EnvVars:     []string{"PLUGIN_NETRC_MACHINE", "DRONE_NETRC_MACHINE"},
+			EnvVars:     []string{"PLUGIN_NETRC_MACHINE", "CI_NETRC_MACHINE"},
 			Destination: &settings.Netrc.Machine,
 			Value:       "github.com",
 			Category:    category,
@@ -44,7 +44,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		&cli.StringFlag{
 			Name:        "netrc.username",
 			Usage:       "netrc login user on the remote machine",
-			EnvVars:     []string{"PLUGIN_NETRC_USERNAME", "DRONE_NETRC_USERNAME"},
+			EnvVars:     []string{"PLUGIN_NETRC_USERNAME", "CI_NETRC_USERNAME"},
 			Destination: &settings.Netrc.Login,
 			Value:       "token",
 			Category:    category,
@@ -52,7 +52,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		&cli.StringFlag{
 			Name:        "netrc.password",
 			Usage:       "netrc login password on the remote machine",
-			EnvVars:     []string{"PLUGIN_NETRC_PASSWORD", "DRONE_NETRC_PASSWORD"},
+			EnvVars:     []string{"PLUGIN_NETRC_PASSWORD", "CI_NETRC_PASSWORD"},
 			Destination: &settings.Netrc.Password,
 			Category:    category,
 		},
@@ -67,7 +67,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		&cli.StringFlag{
 			Name:        "remote-url",
 			Usage:       "url of the remote repository",
-			EnvVars:     []string{"PLUGIN_REMOTE_URL", "DRONE_REMOTE_URL"},
+			EnvVars:     []string{"PLUGIN_REMOTE_URL", "CI_REPO_CLONE_URL"},
 			Destination: &settings.Repo.RemoteURL,
 			Category:    category,
 		},

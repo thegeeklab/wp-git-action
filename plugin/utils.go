@@ -4,14 +4,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sirupsen/logrus"
-	"github.com/thegeeklab/drone-git-action/git"
+	"github.com/rs/zerolog/log"
+	"github.com/thegeeklab/wp-git-action/git"
 	"golang.org/x/sys/execabs"
 )
 
 // helper function to simply wrap os execte command.
 func execute(cmd *execabs.Cmd) error {
-	logrus.Debug("+", strings.Join(cmd.Args, " "))
+	log.Debug().Msgf("+ %s", strings.Join(cmd.Args, " "))
 
 	cmd.Env = os.Environ()
 	cmd.Stderr = os.Stderr

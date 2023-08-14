@@ -2,7 +2,7 @@ style: github
 template: CHANGELOG.tpl.md
 info:
   title: CHANGELOG
-  repository_url: https://github.com/thegeeklab/drone-git-action
+  repository_url: https://github.com/thegeeklab/wp-git-action
 options:
   commit_groups:
     title_maps:

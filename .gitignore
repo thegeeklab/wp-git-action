@@ -1,6 +1,6 @@
 /dist/
 /release/
-/drone-git-action*
+/wp-git-action*
 
 coverage.out
 CHANGELOG.md

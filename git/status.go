@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"os"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/sys/execabs"
 )
 
@@ -35,7 +35,7 @@ func IsDirty(repo Repository) bool {
 	}
 
 	if res.Len() > 0 {
-		logrus.Debug(res.String())
+		log.Debug().Msg(res.String())
 
 		return true
 	}

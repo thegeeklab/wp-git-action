@@ -1,21 +1,46 @@
 package plugin
 
 import (
-	"github.com/thegeeklab/drone-plugin-lib/v2/drone"
+	"github.com/thegeeklab/wp-git-action/git"
+	wp "github.com/thegeeklab/wp-plugin-go/plugin"
+	"github.com/urfave/cli/v2"
 )
 
-// Plugin implements drone.Plugin to provide the plugin implementation.
+// Plugin implements provide the plugin implementation.
 type Plugin struct {
-	settings Settings
-	pipeline drone.Pipeline
-	network  drone.Network
+	*wp.Plugin
+	Settings *Settings
 }
 
-// New initializes a plugin from the given Settings, Pipeline, and Network.
-func New(settings Settings, pipeline drone.Pipeline, network drone.Network) *Plugin {
-	return &Plugin{
-		settings: settings,
-		pipeline: pipeline,
-		network:  network,
-	}
+// Settings for the Plugin.
+type Settings struct {
+	Action cli.StringSlice
+	SSHKey string
+
+	Netrc Netrc
+	Pages Pages
+	Repo  git.Repository
+}
+
+type Netrc struct {
+	Machine  string
+	Login    string
+	Password string
+}
+
+type Pages struct {
+	Directory string
+	Exclude   cli.StringSlice
+	Delete    bool
+}
+
+func New(options wp.Options, settings *Settings) *Plugin {
+	p := &Plugin{}
+
+	options.Execute = p.run
+
+	p.Plugin = wp.New(options)
+	p.Settings = settings
+
+	return p
 }
