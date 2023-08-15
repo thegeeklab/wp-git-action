@@ -2,9 +2,10 @@
 title: wp-git-action
 ---
 
-[![Build Status](https://img.shields.io/wp/build/thegeeklab/wp-git-action?logo=wp&server=https%3A%2F%2Fwp.thegeeklab.de)](https://wp.thegeeklab.de/thegeeklab/wp-git-action)
+[![Build Status](https://ci.thegeeklab.de/api/badges/thegeeklab/wp-git-action/status.svg)](https://ci.thegeeklab.de/repos/thegeeklab/wp-git-action)
 [![Docker Hub](https://img.shields.io/badge/dockerhub-latest-blue.svg?logo=docker&logoColor=white)](https://hub.docker.com/r/thegeeklab/wp-git-action)
 [![Quay.io](https://img.shields.io/badge/quay-latest-blue.svg?logo=docker&logoColor=white)](https://quay.io/repository/thegeeklab/wp-git-action)
+[![Go Report Card](https://goreportcard.com/badge/github.com/thegeeklab/wp-git-action)](https://goreportcard.com/report/github.com/thegeeklab/wp-git-action)
 [![GitHub contributors](https://img.shields.io/github/contributors/thegeeklab/wp-git-action)](https://github.com/thegeeklab/wp-git-action/graphs/contributors)
 [![Source: GitHub](https://img.shields.io/badge/source-github-blue.svg?logo=github&logoColor=white)](https://github.com/thegeeklab/wp-git-action)
 [![License: MIT](https://img.shields.io/github/license/thegeeklab/wp-git-action)](https://github.com/thegeeklab/wp-git-action/blob/main/LICENSE)
