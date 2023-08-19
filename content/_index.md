@@ -10,7 +10,7 @@ title: wp-git-action
 [![Source: GitHub](https://img.shields.io/badge/source-github-blue.svg?logo=github&logoColor=white)](https://github.com/thegeeklab/wp-git-action)
 [![License: MIT](https://img.shields.io/github/license/thegeeklab/wp-git-action)](https://github.com/thegeeklab/wp-git-action/blob/main/LICENSE)
 
-Woodpecker CI plugin to execute git actions.
+Woodpecker CI plugin to perform git actions.
 
 <!-- prettier-ignore-start -->
 <!-- spellchecker-disable -->
