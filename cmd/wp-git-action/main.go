@@ -17,7 +17,7 @@ func main() {
 	settings := &plugin.Settings{}
 	options := wp.Options{
 		Name:            "wp-git-action",
-		Description:     "Perform git operations.",
+		Description:     "Perform git actions.",
 		Version:         BuildVersion,
 		VersionMetadata: fmt.Sprintf("date=%s", BuildDate),
 		Flags:           settingsFlags(settings, wp.FlagsPluginCategory),
