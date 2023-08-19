@@ -40,12 +40,12 @@ steps:
     image: docker.io/chko/docker-pushrm:1
     secrets:
       - source: docker_password
-        target:  DOCKER_PASS
+        target: DOCKER_PASS
       - source: docker_username
-        target:  DOCKER_USER
+        target: DOCKER_USER
     environment:
       PUSHRM_FILE: README.md
-      PUSHRM_SHORT: Woodpecker CI plugin to execute git actions
+      PUSHRM_SHORT: Woodpecker CI plugin to perform git actions
       PUSHRM_TARGET: ${CI_REPO}
     when:
       - event: [push, manual]
