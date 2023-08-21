@@ -8,7 +8,6 @@ import (
 	"path/filepath"
 
 	"github.com/thegeeklab/wp-git-action/git"
-	"github.com/urfave/cli/v2"
 )
 
 var (
@@ -21,10 +20,8 @@ var (
 	ErrGitCloneDestintionNotValid = errors.New("destination not valid")
 )
 
-// Execute provides the implementation of the plugin.
-//
 //nolint:revive
-func (p *Plugin) run(ctx context.Context, cCtx *cli.Context) error {
+func (p *Plugin) run(ctx context.Context) error {
 	if err := p.Validate(); err != nil {
 		return fmt.Errorf("validation failed: %w", err)
 	}
