@@ -1,7 +1,7 @@
 repository:
   name: wp-git-action
   description: Woodpecker CI plugin to perform git actions
-  homepage: https://wp-plugin-index.geekdocs.de/plugins/wp-git-action
+  homepage: https://woodpecker-plugins.geekdocs.de/plugins/wp-git-action
   topics: woodpecker-ci, woodpecker, woodpecker-plugin
 
   private: false

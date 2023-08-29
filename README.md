@@ -10,7 +10,7 @@ Woodpecker CI plugin to perform git actions
 [![Source: GitHub](https://img.shields.io/badge/source-github-blue.svg?logo=github&logoColor=white)](https://github.com/thegeeklab/wp-git-action)
 [![License: Apache-2.0](https://img.shields.io/github/license/thegeeklab/wp-git-action)](https://github.com/thegeeklab/wp-git-action/blob/main/LICENSE)
 
-Woodpecker CI plugin to perform git actions. You can find the full documentation at [https://wp-plugin-index.geekdocs.de](https://wp-plugin-index.geekdocs.de/plugins/wp-git-action).
+Woodpecker CI plugin to perform git actions. You can find the full documentation at [https://woodpecker-plugins.geekdocs.de](https://woodpecker-plugins.geekdocs.de/plugins/wp-git-action).
 
 ## Contributors
 
