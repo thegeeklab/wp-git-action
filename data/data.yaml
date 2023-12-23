@@ -68,9 +68,11 @@ properties:
     defaultvalue: false
     type: bool
 
-  - name: insecure_ssl_verify
-    description: Configure git SSL verification of the remote machine.
-    defaultvalue: false
+  - name: insecure_skip_ssl_verify
+    description: |
+      Skip SSL verification of the remote machine. Activating this option is insecure
+      and should be avoided in most cases.
+    defaultvalue: true
     type: bool
 
   - name: empty_commit
