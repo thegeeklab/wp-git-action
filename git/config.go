@@ -64,13 +64,13 @@ func ConfigUserName(repo Repository) *execabs.Cmd {
 	return cmd
 }
 
-// repoSSLVerify disables globally the git ssl verification.
+// ConfigSSLVerify disables globally the git ssl verification.
 func ConfigSSLVerify(repo Repository) *execabs.Cmd {
 	args := []string{
 		"config",
 		"--local",
 		"http.sslVerify",
-		strconv.FormatBool(repo.SSLVerify),
+		strconv.FormatBool(!repo.InsecureSkipSSLVerify),
 	}
 
 	cmd := execabs.Command(

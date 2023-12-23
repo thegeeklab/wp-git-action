@@ -1,5 +1,7 @@
 package git
 
+const gitBin = "/usr/bin/git"
+
 type Author struct {
 	Name  string
 	Email string
@@ -13,17 +15,14 @@ type Repository struct {
 	Add       string
 	CommitMsg string
 
-	Autocorrect       string
-	NoVerify          bool
-	InsecureSSLVerify bool
-	EmptyCommit       bool
-	PushFollowTags    bool
-	ForcePush         bool
-	SSLVerify         bool
-	WorkDir           string
-	InitExists        bool
+	Autocorrect           string
+	NoVerify              bool
+	InsecureSkipSSLVerify bool
+	EmptyCommit           bool
+	PushFollowTags        bool
+	ForcePush             bool
+	WorkDir               string
+	InitExists            bool
 
 	Author Author
 }
-
-const gitBin = "/usr/bin/git"
