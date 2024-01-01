@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/rs/zerolog v1.31.0
 	github.com/thegeeklab/wp-plugin-go v1.3.0
-	github.com/urfave/cli/v2 v2.26.0
+	github.com/urfave/cli/v2 v2.27.1
 	golang.org/x/sys v0.15.0
 )
 
