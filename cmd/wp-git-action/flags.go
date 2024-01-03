@@ -6,6 +6,8 @@ import (
 )
 
 // settingsFlags has the cli.Flags for the plugin.Settings.
+//
+//go:generate go run docs.go flags.go
 func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringSliceFlag{
@@ -136,7 +138,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 		&cli.StringFlag{
 			Name:        "pages.directory",
-			Usage:       "source directory for pages sync",
+			Usage:       "source directory to be synchronized with the pages banch",
 			EnvVars:     []string{"PLUGIN_PAGES_DIRECTORY"},
 			Destination: &settings.Pages.Directory,
 			Value:       "docs/",
@@ -144,14 +146,14 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 		&cli.StringSliceFlag{
 			Name:        "pages.exclude",
-			Usage:       "exclude flag added to pages rsnyc command",
+			Usage:       "files or directories to exclude from the pages rsync command",
 			EnvVars:     []string{"PLUGIN_PAGES_EXCLUDE"},
 			Destination: &settings.Pages.Exclude,
 			Category:    category,
 		},
 		&cli.BoolFlag{
 			Name:        "pages.delete",
-			Usage:       "delete flag added to pages rsync command",
+			Usage:       "add delete flag to pages rsync command",
 			EnvVars:     []string{"PLUGIN_PAGES_DELETE"},
 			Destination: &settings.Pages.Delete,
 			Value:       true,
