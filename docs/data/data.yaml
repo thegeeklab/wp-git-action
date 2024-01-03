@@ -2,99 +2,144 @@
 properties:
   - name: action
     description: |
-      Git actions to be executed. Supported actions: `clone | commit | push | pages`. Specified actions are executed in the specified order
+      Git action to execute.
+
+      Supported actions: `clone | commit | push | pages`. Specified actions are executed in the specified order
 
       - **clone:** Clones the repository in `remote_url` and checks out the `branch` to `path`.
       - **commit:** Adds a commit to the default repository or the repository in `remote_url`.
       - **push:** Pushes all commits to the default repository or the repository set in `remote_url`.
       - **pages:** The `pages` action is a special action that cannot be combined with other actions. It is intended for use for
         GitHub pages. It synchronizes the contents of `pages_directory` with the target `branch` using `rsync` and pushes the changes automatically.
-    required: true
     type: list
-
-  - name: author_name
-    description: Git author name.
     required: true
-    type: string
 
   - name: author_email
-    description: Git author Email Address.
+    description: |
+      Git author email.
+    type: string
     required: true
-    type: string
 
-  - name: netrc_machine
-    description: Netrc remote machine name.
-    defaultvalue: github.com
+  - name: author_name
+    description: |
+      Git author name.
     type: string
-
-  - name: netrc_username
-    description: Netrc login user on the remote machine.
-    defaultvalue: token
-    type: string
-
-  - name: netrc_password
-    description: Netrc login password on the remote machine.
-    type: string
-
-  - name: ssh_key
-    description: SSH private key for the remote repository.
-    type: string
-
-  - name: remote_url
-    description: URL of the remote repository.
-    type: string
+    required: true
 
   - name: branch
-    description: Name of the git branch.
-    defaultvalue: main
+    description: |
+      Name of the git source branch.
     type: string
+    defaultvalue: "main"
+    required: false
 
-  - name: path
-    description: Path to clone the git repository.
-    type: string
+  - name: empty_commit
+    description: |
+      Allow empty commits.
 
-  - name: message
-    description: Commit message.
-    defaultvalue: "[skip ci] commit dirty state"
-    type: string
-
-  - name: force
-    description: Enable force push to remote repository.
-    defaultvalue: false
+      Usually recording a commit that has the exact same tree as its sole parent commit is a mistake,
+      and those commits are not allowed by default.
     type: bool
+    defaultvalue: false
+    required: false
 
   - name: followtags
-    description: Push all the `refs` that would be pushed without this option, and also push annotated tags in `refs/tags` that are missing from the remote.
-    defaultvalue: false
+    description: |
+      Follow tags for pushes to remote repository.
+
+      Push all the `refs` that would be pushed without this option, and also push annotated tags
+      in `refs/tags` that are missing from the remote.
     type: bool
+    defaultvalue: false
+    required: false
+
+  - name: force
+    description: |
+      Enable force push to remote repository.
+    type: bool
+    defaultvalue: false
+    required: false
 
   - name: insecure_skip_ssl_verify
     description: |
-      Skip SSL verification of the remote machine. Activating this option is insecure
-      and should be avoided in most cases.
-    defaultvalue: true
-    type: bool
+      Skip ssl verification of the remote machine.
 
-  - name: empty_commit
-    description: Allow empty commits. Usually recording a commit that has the exact same tree as its sole parent commit is a mistake, and those commits are not allowed by default.
-    defaultvalue: false
+      Activating this option is insecure and should be avoided in most cases.
     type: bool
+    defaultvalue: false
+    required: false
+
+  - name: message
+    description: |
+      Commit message.
+    type: string
+    defaultvalue: "[skip ci] commit dirty state"
+    required: false
+
+  - name: netrc_machine
+    description: |
+      Netrc remote machine name.
+    type: string
+    defaultvalue: "github.com"
+    required: false
+
+  - name: netrc_password
+    description: |
+      Netrc login password on the remote machine.
+    type: string
+    required: false
+
+  - name: netrc_username
+    description: |
+      Netrc login user on the remote machine.
+    type: string
+    defaultvalue: "token"
+    required: false
 
   - name: no_verify
-    description: Bypass the pre-commit and commit-msg hooks.
-    defaultvalue: false
+    description: |
+      Bypass the pre-commit and commit-msg hooks.
     type: bool
-
-  - name: pages_directory
-    description: Source directory to be synchronized with the pages `branch`.
-    defaultvalue: docs/
-    type: string
-
-  - name: pages_exclude
-    description: Files or directories to exclude from the rsync command.
-    type: list
+    defaultvalue: false
+    required: false
 
   - name: pages_delete
-    description: When set to `true`, the `--delete` flag is added to the rsync command to remove files from the `branch` that do not exist in the `pages_directory` either.
-    defaultvalue: true
+    description: |
+      Add delete flag to pages rsync command.
+
+      When set to `true`, the `--delete` flag is added to the rsync command to remove files
+      from the branch that do not exist in the `pages_directory` either.
     type: bool
+    defaultvalue: true
+    required: false
+
+  - name: pages_directory
+    description: |
+      Source directory to be synchronized with the pages branch.
+    type: string
+    defaultvalue: "docs/"
+    required: false
+
+  - name: pages_exclude
+    description: |
+      Files or directories to exclude from the pages rsync command.
+    type: list
+    required: false
+
+  - name: path
+    description: |
+      Path to clone git repository.
+    type: string
+    required: false
+
+  - name: remote_url
+    description: |
+      Url of the remote repository.
+    type: string
+    required: false
+
+  - name: ssh_key
+    description: |
+      Ssh private key for the remote repository.
+    type: string
+    required: false

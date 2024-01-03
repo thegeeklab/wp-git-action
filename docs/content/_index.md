@@ -26,7 +26,7 @@ name: default
 
 steps:
   - name: commit changelog
-    image: thegeeklab/wp-git-action
+    image: quay.io/thegeeklab/wp-git-action
     settings:
       action:
         - commit
@@ -57,7 +57,7 @@ name: default
 
 steps:
   - name: publish
-    image: thegeeklab/wp-git-action
+    image: quay.io/thegeeklab/wp-git-action
     settings:
       action:
         - pages

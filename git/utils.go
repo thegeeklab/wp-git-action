@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
-	"strings"
 
+	"github.com/thegeeklab/wp-plugin-go/trace"
 	"golang.org/x/sys/execabs"
 )
 
@@ -88,10 +88,6 @@ func WriteNetrc(machine, login, password string) error {
 	)
 }
 
-func trace(cmd *execabs.Cmd) {
-	fmt.Fprintf(os.Stdout, "+ %s\n", strings.Join(cmd.Args, " "))
-}
-
 func runCommand(cmd *execabs.Cmd) error {
 	if cmd.Stdout == nil {
 		cmd.Stdout = os.Stdout
@@ -101,7 +97,7 @@ func runCommand(cmd *execabs.Cmd) error {
 		cmd.Stderr = os.Stderr
 	}
 
-	trace(cmd)
+	trace.Cmd(cmd)
 
 	return cmd.Run()
 }
