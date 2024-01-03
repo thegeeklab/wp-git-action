@@ -30,7 +30,7 @@ properties:
     description: |
       Name of the git source branch.
     type: string
-    defaultvalue: "main"
+    defaultValue: "main"
     required: false
 
   - name: empty_commit
@@ -40,7 +40,7 @@ properties:
       Usually recording a commit that has the exact same tree as its sole parent commit is a mistake,
       and those commits are not allowed by default.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: followtags
@@ -50,14 +50,14 @@ properties:
       Push all the `refs` that would be pushed without this option, and also push annotated tags
       in `refs/tags` that are missing from the remote.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: force
     description: |
       Enable force push to remote repository.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: insecure_skip_ssl_verify
@@ -66,21 +66,21 @@ properties:
 
       Activating this option is insecure and should be avoided in most cases.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: message
     description: |
       Commit message.
     type: string
-    defaultvalue: "[skip ci] commit dirty state"
+    defaultValue: "[skip ci] commit dirty state"
     required: false
 
   - name: netrc_machine
     description: |
       Netrc remote machine name.
     type: string
-    defaultvalue: "github.com"
+    defaultValue: "github.com"
     required: false
 
   - name: netrc_password
@@ -93,14 +93,14 @@ properties:
     description: |
       Netrc login user on the remote machine.
     type: string
-    defaultvalue: "token"
+    defaultValue: "token"
     required: false
 
   - name: no_verify
     description: |
       Bypass the pre-commit and commit-msg hooks.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: pages_delete
@@ -110,14 +110,14 @@ properties:
       When set to `true`, the `--delete` flag is added to the rsync command to remove files
       from the branch that do not exist in the `pages_directory` either.
     type: bool
-    defaultvalue: true
+    defaultValue: true
     required: false
 
   - name: pages_directory
     description: |
       Source directory to be synchronized with the pages branch.
     type: string
-    defaultvalue: "docs/"
+    defaultValue: "docs/"
     required: false
 
   - name: pages_exclude
