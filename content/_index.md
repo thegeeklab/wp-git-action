@@ -8,7 +8,7 @@ title: wp-git-action
 [![Go Report Card](https://goreportcard.com/badge/github.com/thegeeklab/wp-git-action)](https://goreportcard.com/report/github.com/thegeeklab/wp-git-action)
 [![GitHub contributors](https://img.shields.io/github/contributors/thegeeklab/wp-git-action)](https://github.com/thegeeklab/wp-git-action/graphs/contributors)
 [![Source: GitHub](https://img.shields.io/badge/source-github-blue.svg?logo=github&logoColor=white)](https://github.com/thegeeklab/wp-git-action)
-[![License: MIT](https://img.shields.io/github/license/thegeeklab/wp-git-action)](https://github.com/thegeeklab/wp-git-action/blob/main/LICENSE)
+[![License: Apache-2.0](https://img.shields.io/github/license/thegeeklab/wp-git-action)](https://github.com/thegeeklab/wp-git-action/blob/main/LICENSE)
 
 Woodpecker CI plugin to perform git actions.
 
