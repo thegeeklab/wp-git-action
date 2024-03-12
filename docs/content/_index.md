@@ -21,9 +21,6 @@ Woodpecker CI plugin to perform git actions.
 ## Usage
 
 ```YAML
-kind: pipeline
-name: default
-
 steps:
   - name: commit changelog
     image: quay.io/thegeeklab/wp-git-action
@@ -31,7 +28,7 @@ steps:
       action:
         - commit
         - push
-      netrc_password: ghp_3LbMg9Kncpdkhjp3bh3dMnKNXLjVMTsXk4sM
+      netrc_password: ghp_randomstring
       author_name: octobot
       author_email: octobot@example.com
       message: "[skip ci] update changelog"
@@ -52,21 +49,18 @@ steps:
 The plugin can be used to publish GitHub pages to the pages branch. Remember that the `pages` action cannot be combined with other actions.
 
 ```YAML
-kind: pipeline
-name: default
-
 steps:
   - name: publish
     image: quay.io/thegeeklab/wp-git-action
     settings:
       action:
         - pages
-      author_email: bot@thegeeklab.de
-      author_name: thegeeklab-bot
+      author_email: bot@texample.com
+      author_name: octocat-bot
       message: "update pages"
       branch: gh-pages
       pages_directory: docs/
-      netrc_password: ghp_3LbMg9Kncpdkhjp3bh3dMnKNXLjVMTsXk4sM
+      netrc_password: ghp_randomstring
 ```
 
 ## Build
@@ -86,5 +80,12 @@ docker build --file Containerfile.multiarch --tag thegeeklab/wp-git-action .
 ## Test
 
 ```Shell
-
+docker run --rm \
+  -e PLUGIN_ACTION=clone \
+  -e PLUGIN_BRANCH=master \
+  -e PLUGIN_AUTHOR_EMAIL=octocat@example.copm \
+  -e PLUGIN_AUTHOR_NAME=octocat \
+  -e PLUGIN_REMOTE_URL=https://github.com/octocat/Hello-World \
+  -w /tmp \
+  thegeeklab/wp-git-action
 ```
