@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/thegeeklab/wp-git-action/git"
+	"github.com/thegeeklab/wp-plugin-go/v2/file"
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 )
 
 var (
@@ -18,6 +20,13 @@ var (
 	ErrPagesActionNotExclusive    = errors.New("pages action is mutual exclusive")
 	ErrActionUnknown              = errors.New("action not found")
 	ErrGitCloneDestintionNotValid = errors.New("destination not valid")
+)
+
+const (
+	ActionClone  Action = "clone"
+	ActionCommit Action = "commit"
+	ActionPush   Action = "push"
+	ActionPages  Action = "pages"
 )
 
 //nolint:revive
@@ -46,20 +55,21 @@ func (p *Plugin) Validate() error {
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get working directory: %w", err)
 	}
 
-	for _, action := range p.Settings.Action.Value() {
+	for _, actionStr := range p.Settings.Action.Value() {
+		action := Action(actionStr)
 		switch action {
-		case "clone":
+		case ActionClone:
 			continue
-		case "commit":
+		case ActionCommit:
 			continue
-		case "push":
+		case ActionPush:
 			if p.Settings.SSHKey == "" && p.Settings.Netrc.Password == "" {
 				return ErrAuthSourceNotSet
 			}
-		case "pages":
+		case ActionPages:
 			p.Settings.Pages.Directory = filepath.Join(p.Settings.Repo.WorkDir, p.Settings.Pages.Directory)
 			p.Settings.Repo.WorkDir = filepath.Join(p.Settings.Repo.WorkDir, ".tmp")
 
@@ -83,7 +93,7 @@ func (p *Plugin) Validate() error {
 				return ErrPagesActionNotExclusive
 			}
 		default:
-			return fmt.Errorf("%w: %s", ErrActionUnknown, action)
+			return fmt.Errorf("%w: %s", ErrActionUnknown, actionStr)
 		}
 	}
 
@@ -92,6 +102,8 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
+	homeDir := getUserHomeDir()
+	batchCmd := make([]*types.Cmd, 0)
 	gitEnv := []string{
 		"GIT_AUTHOR_NAME",
 		"GIT_AUTHOR_EMAIL",
@@ -103,147 +115,150 @@ func (p *Plugin) Execute() error {
 
 	for _, env := range gitEnv {
 		if err := os.Unsetenv(env); err != nil {
-			return err
+			return fmt.Errorf("failed to unset git env vars '%s': %w", env, err)
 		}
 	}
 
 	if err := os.Setenv("GIT_TERMINAL_PROMPT", "0"); err != nil {
-		return err
+		return fmt.Errorf("failed to git env var': %w", err)
 	}
 
-	if err := p.handleInit(); err != nil {
-		return err
-	}
-
-	if err := git.ConfigAutocorrect(p.Settings.Repo).Run(); err != nil {
-		return err
-	}
-
-	if err := git.ConfigUserName(p.Settings.Repo).Run(); err != nil {
-		return err
-	}
-
-	if err := git.ConfigUserEmail(p.Settings.Repo).Run(); err != nil {
-		return err
-	}
-
-	if err := git.ConfigSSLVerify(p.Settings.Repo).Run(); err != nil {
-		return err
-	}
-
+	// Write SSH key and netrc file.
 	if p.Settings.SSHKey != "" {
-		if err := git.WriteSSHKey(p.Settings.SSHKey); err != nil {
+		if err := git.WriteSSHKey(homeDir, p.Settings.SSHKey); err != nil {
 			return err
 		}
 	}
 
-	if err := git.WriteNetrc(p.Settings.Netrc.Machine, p.Settings.Netrc.Login, p.Settings.Netrc.Password); err != nil {
+	netrc := p.Settings.Netrc
+	if err := git.WriteNetrc(homeDir, netrc.Machine, netrc.Login, netrc.Password); err != nil {
 		return err
 	}
 
-	for _, action := range p.Settings.Action.Value() {
+	// Handle repo initialization.
+	if err := os.MkdirAll(p.Settings.Repo.WorkDir, os.ModePerm); err != nil {
+		return fmt.Errorf("failed to create working directory: %w", err)
+	}
+
+	isEmpty, err := file.IsDirEmpty(p.Settings.Repo.WorkDir)
+	if err != nil {
+		return fmt.Errorf("failed to check working directory: %w", err)
+	}
+
+	p.Settings.Repo.IsEmpty = isEmpty
+
+	isDir, err := file.IsDir(filepath.Join(p.Settings.Repo.WorkDir, ".git"))
+	if err != nil {
+		return fmt.Errorf("failed to check working directory: %w", err)
+	}
+
+	if !isDir {
+		batchCmd = append(batchCmd, git.Init(p.Settings.Repo))
+	}
+
+	// Handle repo configuration.
+	batchCmd = append(batchCmd, git.ConfigAutocorrect(p.Settings.Repo))
+	batchCmd = append(batchCmd, git.ConfigUserName(p.Settings.Repo))
+	batchCmd = append(batchCmd, git.ConfigUserEmail(p.Settings.Repo))
+	batchCmd = append(batchCmd, git.ConfigSSLVerify(p.Settings.Repo, p.Network.InsecureSkipVerify))
+
+	for _, actionStr := range p.Settings.Action.Value() {
+		action := Action(actionStr)
 		switch action {
-		case "clone":
-			if err := p.handleClone(); err != nil {
+		case ActionClone:
+			cmds, err := p.handleClone()
+			if err != nil {
 				return err
 			}
-		case "commit":
-			if err := p.handleCommit(); err != nil {
+
+			batchCmd = append(batchCmd, cmds...)
+		case ActionCommit:
+			batchCmd = append(batchCmd, p.handleCommit()...)
+		case ActionPush:
+			batchCmd = append(batchCmd, p.handlePush()...)
+		case ActionPages:
+			cmds, err := p.handlePages()
+			if err != nil {
 				return err
 			}
-		case "push":
-			if err := p.handlePush(); err != nil {
-				return err
-			}
-		case "pages":
-			if err := p.handlePages(); err != nil {
-				return err
-			}
+
+			batchCmd = append(batchCmd, cmds...)
+		}
+	}
+
+	for _, cmd := range batchCmd {
+		if err := cmd.Run(); err != nil {
+			return err
 		}
 	}
 
 	return nil
 }
 
-// handleInit initializes the repository.
-func (p *Plugin) handleInit() error {
-	path := filepath.Join(p.Settings.Repo.WorkDir, ".git")
+// handleClone clones the remote repository into the configured working directory.
+// If the working directory is not empty, it returns an error.
+func (p *Plugin) handleClone() ([]*types.Cmd, error) {
+	var cmds []*types.Cmd
 
-	if err := os.MkdirAll(p.Settings.Repo.WorkDir, os.ModePerm); err != nil {
-		return err
-	}
-
-	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		p.Settings.Repo.InitExists = true
-
-		return nil
-	}
-
-	return execute(git.Init(p.Settings.Repo))
-}
-
-// HandleClone clones remote.
-func (p *Plugin) handleClone() error {
-	if p.Settings.Repo.InitExists {
-		return fmt.Errorf("%w: %s exists and not empty", ErrGitCloneDestintionNotValid, p.Settings.Repo.WorkDir)
+	if !p.Settings.Repo.IsEmpty {
+		return cmds, fmt.Errorf("%w: %s exists and not empty", ErrGitCloneDestintionNotValid, p.Settings.Repo.WorkDir)
 	}
 
 	if p.Settings.Repo.RemoteURL != "" {
-		if err := execute(git.RemoteAdd(p.Settings.Repo)); err != nil {
-			return err
-		}
+		cmds = append(cmds, git.RemoteAdd(p.Settings.Repo))
 	}
 
-	if err := execute(git.FetchSource(p.Settings.Repo)); err != nil {
-		return err
-	}
+	cmds = append(cmds, git.FetchSource(p.Settings.Repo))
+	cmds = append(cmds, git.CheckoutHead(p.Settings.Repo))
 
-	return execute(git.CheckoutHead(p.Settings.Repo))
+	return cmds, nil
 }
 
 // HandleCommit commits changes locally.
-func (p *Plugin) handleCommit() error {
-	if err := execute(git.Add(p.Settings.Repo)); err != nil {
-		return err
-	}
+func (p *Plugin) handleCommit() []*types.Cmd {
+	var cmds []*types.Cmd
 
-	if err := execute(git.TestCleanTree(p.Settings.Repo)); err != nil {
-		if err := execute(git.ForceCommit(p.Settings.Repo)); err != nil {
-			return err
-		}
+	cmds = append(cmds, git.Add(p.Settings.Repo))
+
+	if err := git.IsCleanTree(p.Settings.Repo).Run(); err != nil {
+		cmds = append(cmds, git.Commit(p.Settings.Repo))
 	}
 
 	if p.Settings.Repo.EmptyCommit {
-		if err := execute(git.EmptyCommit(p.Settings.Repo)); err != nil {
-			return err
-		}
+		cmds = append(cmds, git.EmptyCommit(p.Settings.Repo))
 	}
 
-	return nil
+	return cmds
 }
 
 // HandlePush pushs changes to remote.
-func (p *Plugin) handlePush() error {
-	return execute(git.RemotePush(p.Settings.Repo))
+func (p *Plugin) handlePush() []*types.Cmd {
+	return []*types.Cmd{git.RemotePush(p.Settings.Repo)}
 }
 
 // HandlePages syncs, commits and pushes the changes from the pages directory to the pages branch.
-func (p *Plugin) handlePages() error {
+func (p *Plugin) handlePages() ([]*types.Cmd, error) {
+	var cmds []*types.Cmd
+
 	defer os.RemoveAll(p.Settings.Repo.WorkDir)
 
-	if err := p.handleClone(); err != nil {
-		return err
+	ccmd, err := p.handleClone()
+	if err != nil {
+		return cmds, err
 	}
 
-	if err := execute(
-		rsyncDirectories(p.Settings.Pages, p.Settings.Repo),
-	); err != nil {
-		return err
-	}
+	cmds = append(cmds, ccmd...)
+	cmds = append(cmds,
+		SyncDirectories(
+			p.Settings.Pages.Exclude.Value(),
+			p.Settings.Pages.Delete,
+			p.Settings.Pages.Directory,
+			p.Settings.Repo.WorkDir,
+		),
+	)
 
-	if err := p.handleCommit(); err != nil {
-		return err
-	}
+	cmds = append(cmds, p.handleCommit()...)
+	cmds = append(cmds, p.handlePush()...)
 
-	return p.handlePush()
+	return cmds, nil
 }

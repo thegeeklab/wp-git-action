@@ -15,14 +15,13 @@ type Repository struct {
 	Add       string
 	CommitMsg string
 
-	Autocorrect           string
-	NoVerify              bool
-	InsecureSkipSSLVerify bool
-	EmptyCommit           bool
-	PushFollowTags        bool
-	ForcePush             bool
-	WorkDir               string
-	InitExists            bool
+	Autocorrect    string
+	NoVerify       bool
+	EmptyCommit    bool
+	PushFollowTags bool
+	ForcePush      bool
+	WorkDir        string
+	IsEmpty        bool
 
 	Author Author
 }

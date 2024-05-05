@@ -1,14 +1,15 @@
 package git
 
 import (
-	"os"
 	"strconv"
 
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 	"golang.org/x/sys/execabs"
 )
 
-// repoUserEmail sets the global git author email.
-func ConfigAutocorrect(repo Repository) *execabs.Cmd {
+// ConfigAutocorrect sets the local git autocorrect configuration for the given repository.
+// The autocorrect setting determines how git handles minor typos in commands.
+func ConfigAutocorrect(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -16,18 +17,16 @@ func ConfigAutocorrect(repo Repository) *execabs.Cmd {
 		repo.Autocorrect,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }
 
-// repoUserEmail sets the global git author email.
-func ConfigUserEmail(repo Repository) *execabs.Cmd {
+// ConfigUserEmail sets the global git author email.
+func ConfigUserEmail(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -35,18 +34,16 @@ func ConfigUserEmail(repo Repository) *execabs.Cmd {
 		repo.Author.Email,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }
 
-// repoUserName sets the global git author name.
-func ConfigUserName(repo Repository) *execabs.Cmd {
+// ConfigUserName configures the user.name git config setting for the given repository.
+func ConfigUserName(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -54,31 +51,27 @@ func ConfigUserName(repo Repository) *execabs.Cmd {
 		repo.Author.Name,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }
 
-// ConfigSSLVerify disables globally the git ssl verification.
-func ConfigSSLVerify(repo Repository) *execabs.Cmd {
+// ConfigSSLVerify configures the http.sslVerify git config setting for the given repository.
+func ConfigSSLVerify(repo Repository, skipVerify bool) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
 		"http.sslVerify",
-		strconv.FormatBool(!repo.InsecureSkipSSLVerify),
+		strconv.FormatBool(!skipVerify),
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }
