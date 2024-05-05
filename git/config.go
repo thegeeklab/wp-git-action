@@ -1,14 +1,14 @@
 package git
 
 import (
-	"os"
 	"strconv"
 
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 	"golang.org/x/sys/execabs"
 )
 
 // repoUserEmail sets the global git author email.
-func ConfigAutocorrect(repo Repository) *execabs.Cmd {
+func ConfigAutocorrect(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -16,18 +16,16 @@ func ConfigAutocorrect(repo Repository) *execabs.Cmd {
 		repo.Autocorrect,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }
 
 // repoUserEmail sets the global git author email.
-func ConfigUserEmail(repo Repository) *execabs.Cmd {
+func ConfigUserEmail(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -35,18 +33,16 @@ func ConfigUserEmail(repo Repository) *execabs.Cmd {
 		repo.Author.Email,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }
 
 // repoUserName sets the global git author name.
-func ConfigUserName(repo Repository) *execabs.Cmd {
+func ConfigUserName(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -54,31 +50,27 @@ func ConfigUserName(repo Repository) *execabs.Cmd {
 		repo.Author.Name,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }
 
 // ConfigSSLVerify disables globally the git ssl verification.
-func ConfigSSLVerify(repo Repository) *execabs.Cmd {
+func ConfigSSLVerify(repo Repository, skipVerify bool) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
 		"http.sslVerify",
-		strconv.FormatBool(!repo.InsecureSkipSSLVerify),
+		strconv.FormatBool(!skipVerify),
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }

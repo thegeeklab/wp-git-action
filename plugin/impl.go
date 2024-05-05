@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/thegeeklab/wp-git-action/git"
+	"github.com/thegeeklab/wp-plugin-go/v2/file"
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 )
 
 var (
@@ -92,6 +94,10 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
+	var err error
+
+	batchCmd := make([]*types.Cmd, 0)
+
 	gitEnv := []string{
 		"GIT_AUTHOR_NAME",
 		"GIT_AUTHOR_EMAIL",
@@ -111,26 +117,7 @@ func (p *Plugin) Execute() error {
 		return err
 	}
 
-	if err := p.handleInit(); err != nil {
-		return err
-	}
-
-	if err := git.ConfigAutocorrect(p.Settings.Repo).Run(); err != nil {
-		return err
-	}
-
-	if err := git.ConfigUserName(p.Settings.Repo).Run(); err != nil {
-		return err
-	}
-
-	if err := git.ConfigUserEmail(p.Settings.Repo).Run(); err != nil {
-		return err
-	}
-
-	if err := git.ConfigSSLVerify(p.Settings.Repo).Run(); err != nil {
-		return err
-	}
-
+	// Write SSH key and netrc file.
 	if p.Settings.SSHKey != "" {
 		if err := git.WriteSSHKey(p.Settings.SSHKey); err != nil {
 			return err
@@ -141,80 +128,56 @@ func (p *Plugin) Execute() error {
 		return err
 	}
 
-	for _, action := range p.Settings.Action.Value() {
-		switch action {
-		case "clone":
-			if err := p.handleClone(); err != nil {
-				return err
-			}
-		case "commit":
-			if err := p.handleCommit(); err != nil {
-				return err
-			}
-		case "push":
-			if err := p.handlePush(); err != nil {
-				return err
-			}
-		case "pages":
-			if err := p.handlePages(); err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
-}
-
-// handleInit initializes the repository.
-func (p *Plugin) handleInit() error {
-	path := filepath.Join(p.Settings.Repo.WorkDir, ".git")
-
+	// Handle repo initialization.
 	if err := os.MkdirAll(p.Settings.Repo.WorkDir, os.ModePerm); err != nil {
 		return err
 	}
 
-	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		p.Settings.Repo.InitExists = true
-
-		return nil
-	}
-
-	return execute(git.Init(p.Settings.Repo))
-}
-
-// HandleClone clones remote.
-func (p *Plugin) handleClone() error {
-	if p.Settings.Repo.InitExists {
-		return fmt.Errorf("%w: %s exists and not empty", ErrGitCloneDestintionNotValid, p.Settings.Repo.WorkDir)
-	}
-
-	if p.Settings.Repo.RemoteURL != "" {
-		if err := execute(git.RemoteAdd(p.Settings.Repo)); err != nil {
-			return err
-		}
-	}
-
-	if err := execute(git.FetchSource(p.Settings.Repo)); err != nil {
+	p.Settings.Repo.IsEmpty, err = file.IsDirEmpty(p.Settings.Repo.WorkDir)
+	if err != nil {
 		return err
 	}
 
-	return execute(git.CheckoutHead(p.Settings.Repo))
-}
-
-// HandleCommit commits changes locally.
-func (p *Plugin) handleCommit() error {
-	if err := execute(git.Add(p.Settings.Repo)); err != nil {
+	isDir, err := file.IsDir(filepath.Join(p.Settings.Repo.WorkDir, ".git"))
+	if err != nil {
 		return err
 	}
 
-	if err := execute(git.TestCleanTree(p.Settings.Repo)); err != nil {
-		if err := execute(git.ForceCommit(p.Settings.Repo)); err != nil {
-			return err
+	if !isDir {
+		batchCmd = append(batchCmd, git.Init(p.Settings.Repo))
+	}
+
+	// Handle repo configuration.
+	batchCmd = append(batchCmd, git.ConfigAutocorrect(p.Settings.Repo))
+	batchCmd = append(batchCmd, git.ConfigUserName(p.Settings.Repo))
+	batchCmd = append(batchCmd, git.ConfigUserEmail(p.Settings.Repo))
+	batchCmd = append(batchCmd, git.ConfigSSLVerify(p.Settings.Repo, p.Network.InsecureSkipVerify))
+
+	for _, action := range p.Settings.Action.Value() {
+		switch action {
+		case "clone":
+			cmds, err := p.handleClone()
+			if err != nil {
+				return err
+			}
+
+			batchCmd = append(batchCmd, cmds...)
+		case "commit":
+			batchCmd = append(batchCmd, p.handleCommit()...)
+		case "push":
+			batchCmd = append(batchCmd, p.handlePush()...)
+		case "pages":
+			cmds, err := p.handlePages()
+			if err != nil {
+				return err
+			}
+
+			batchCmd = append(batchCmd, cmds...)
 		}
 	}
 
-	if p.Settings.Repo.EmptyCommit {
-		if err := execute(git.EmptyCommit(p.Settings.Repo)); err != nil {
+	for _, cmd := range batchCmd {
+		if err := cmd.Run(); err != nil {
 			return err
 		}
 	}
@@ -222,28 +185,69 @@ func (p *Plugin) handleCommit() error {
 	return nil
 }
 
+// HandleClone clones remote.
+func (p *Plugin) handleClone() ([]*types.Cmd, error) {
+	var cmds []*types.Cmd
+
+	if !p.Settings.Repo.IsEmpty {
+		return cmds, fmt.Errorf("%w: %s exists and not empty", ErrGitCloneDestintionNotValid, p.Settings.Repo.WorkDir)
+	}
+
+	if p.Settings.Repo.RemoteURL != "" {
+		cmds = append(cmds, git.RemoteAdd(p.Settings.Repo))
+	}
+
+	cmds = append(cmds, git.FetchSource(p.Settings.Repo))
+	cmds = append(cmds, git.CheckoutHead(p.Settings.Repo))
+
+	return cmds, nil
+}
+
+// HandleCommit commits changes locally.
+func (p *Plugin) handleCommit() []*types.Cmd {
+	var cmds []*types.Cmd
+
+	cmds = append(cmds, git.Add(p.Settings.Repo))
+
+	if err := git.TestCleanTree(p.Settings.Repo).Run(); err != nil {
+		cmds = append(cmds, git.Commit(p.Settings.Repo))
+	}
+
+	if p.Settings.Repo.EmptyCommit {
+		cmds = append(cmds, git.EmptyCommit(p.Settings.Repo))
+	}
+
+	return cmds
+}
+
 // HandlePush pushs changes to remote.
-func (p *Plugin) handlePush() error {
-	return execute(git.RemotePush(p.Settings.Repo))
+func (p *Plugin) handlePush() []*types.Cmd {
+	return []*types.Cmd{git.RemotePush(p.Settings.Repo)}
 }
 
 // HandlePages syncs, commits and pushes the changes from the pages directory to the pages branch.
-func (p *Plugin) handlePages() error {
+func (p *Plugin) handlePages() ([]*types.Cmd, error) {
+	var cmds []*types.Cmd
+
 	defer os.RemoveAll(p.Settings.Repo.WorkDir)
 
-	if err := p.handleClone(); err != nil {
-		return err
+	ccmd, err := p.handleClone()
+	if err != nil {
+		return cmds, err
 	}
 
-	if err := execute(
-		rsyncDirectories(p.Settings.Pages, p.Settings.Repo),
-	); err != nil {
-		return err
-	}
+	cmds = append(cmds, ccmd...)
+	cmds = append(cmds,
+		SyncDirectories(
+			p.Settings.Pages.Exclude.Value(),
+			p.Settings.Pages.Delete,
+			p.Settings.Pages.Directory,
+			p.Settings.Repo.WorkDir,
+		),
+	)
 
-	if err := p.handleCommit(); err != nil {
-		return err
-	}
+	cmds = append(cmds, p.handleCommit()...)
+	cmds = append(cmds, p.handlePush()...)
 
-	return p.handlePush()
+	return cmds, nil
 }

@@ -60,13 +60,20 @@ properties:
     defaultValue: false
     required: false
 
-  - name: insecure_skip_ssl_verify
+  - name: insecure_skip_verify
     description: |
-      Skip ssl verification of the remote machine.
+      Skip SSL verification.
 
       Activating this option is insecure and should be avoided in most cases.
     type: bool
     defaultValue: false
+    required: false
+
+  - name: log_level
+    description: |
+      Plugin log level.
+    type: string
+    defaultValue: "info"
     required: false
 
   - name: message

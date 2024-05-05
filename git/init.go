@@ -1,19 +1,19 @@
 package git
 
 import (
-	"os"
-
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 	"golang.org/x/sys/execabs"
 )
 
-// RemoteRemove drops the defined remote from a git repo.
-func Init(repo Repository) *execabs.Cmd {
+// Init creates a new Git repository in the given Repository's WorkDir.
+func Init(repo Repository) *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"init",
 	)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }

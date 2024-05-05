@@ -4,9 +4,9 @@ go 1.22
 
 require (
 	github.com/rs/zerolog v1.32.0
-	github.com/thegeeklab/wp-plugin-go v1.7.1
+	github.com/thegeeklab/wp-plugin-go/v2 v2.1.1-0.20240505145303-d2c3493d683f
 	github.com/urfave/cli/v2 v2.27.2
-	golang.org/x/sys v0.19.0
+	golang.org/x/sys v0.20.0
 )
 
 require (

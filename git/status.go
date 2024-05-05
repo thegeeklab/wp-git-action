@@ -1,14 +1,15 @@
 package git
 
 import (
-	"bytes"
 	"os"
 
 	"github.com/rs/zerolog/log"
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 	"golang.org/x/sys/execabs"
 )
 
-func Status(repo Repository) *execabs.Cmd {
+// Status returns a command that runs `git status --porcelain` in the given repository's working directory.
+func Status(repo Repository) *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"status",
@@ -17,25 +18,25 @@ func Status(repo Repository) *execabs.Cmd {
 	cmd.Dir = repo.WorkDir
 	cmd.Stderr = os.Stderr
 
-	return cmd
+	return &types.Cmd{
+		Cmd: cmd,
+	}
 }
 
+// IsDirty checks if the given repository has any uncommitted changes.
+// It runs the `git status --porcelain` command and returns true if the output is non-empty,
+// indicating that there are uncommitted changes in the repository.
 func IsDirty(repo Repository) bool {
-	res := bytes.NewBufferString("")
-
 	cmd := Status(repo)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
-	cmd.Stdout = res
-	cmd.Stderr = res
 
-	err := runCommand(cmd)
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return false
 	}
 
-	if res.Len() > 0 {
-		log.Debug().Msg(res.String())
+	if len(out) > 0 {
+		log.Debug().Msg(string(out))
 
 		return true
 	}
