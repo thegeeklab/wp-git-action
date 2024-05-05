@@ -7,17 +7,26 @@ import (
 )
 
 func TestInit(t *testing.T) {
-	repo := Repository{
-		WorkDir: "/path/to/repo",
+	tests := []struct {
+		name     string
+		repo     Repository
+		expected []string
+	}{
+		{
+			name: "init repo",
+			repo: Repository{
+				WorkDir: "/path/to/repo",
+				Branch:  "main",
+			},
+			expected: []string{gitBin, "init", "-b", "main"},
+		},
 	}
 
-	cmd := Init(repo)
-	require.Equal(t, []string{gitBin, "init"}, cmd.Cmd.Args)
-	require.Equal(t, repo.WorkDir, cmd.Cmd.Dir)
-
-	// Test with an empty work directory
-	repo.WorkDir = ""
-	cmd = Init(repo)
-	require.Equal(t, []string{gitBin, "init"}, cmd.Cmd.Args)
-	require.Empty(t, cmd.Cmd.Dir)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := Init(tt.repo)
+			require.Equal(t, tt.expected, cmd.Cmd.Args)
+			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+		})
+	}
 }

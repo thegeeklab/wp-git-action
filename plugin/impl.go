@@ -46,13 +46,19 @@ func (p *Plugin) run(ctx context.Context) error {
 func (p *Plugin) Validate() error {
 	var err error
 
-	p.Settings.Repo.Autocorrect = "never"
-	p.Settings.Repo.RemoteName = "origin"
-	p.Settings.Repo.Add = ""
+	// This default cannot be set in the cli flag, as the CI_* environment variables
+	// can be set empty, resulting in an empty default value.
+	if p.Settings.Repo.Branch == "" {
+		p.Settings.Repo.Branch = "main"
+	}
 
 	if p.Settings.Repo.WorkDir == "" {
 		p.Settings.Repo.WorkDir, err = os.Getwd()
 	}
+
+	p.Settings.Repo.Autocorrect = "never"
+	p.Settings.Repo.RemoteName = "origin"
+	p.Settings.Repo.Add = ""
 
 	if err != nil {
 		return fmt.Errorf("failed to get working directory: %w", err)
@@ -102,6 +108,8 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
+	var err error
+
 	homeDir := getUserHomeDir()
 	batchCmd := make([]*types.Cmd, 0)
 	gitEnv := []string{
@@ -140,12 +148,10 @@ func (p *Plugin) Execute() error {
 		return fmt.Errorf("failed to create working directory: %w", err)
 	}
 
-	isEmpty, err := file.IsDirEmpty(p.Settings.Repo.WorkDir)
+	p.Settings.Repo.IsEmpty, err = file.IsDirEmpty(p.Settings.Repo.WorkDir)
 	if err != nil {
 		return fmt.Errorf("failed to check working directory: %w", err)
 	}
-
-	p.Settings.Repo.IsEmpty = isEmpty
 
 	isDir, err := file.IsDir(filepath.Join(p.Settings.Repo.WorkDir, ".git"))
 	if err != nil {
