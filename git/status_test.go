@@ -54,6 +54,7 @@ func TestIsDirty(t *testing.T) {
 			name: "dirty repo",
 			repo: Repository{
 				WorkDir: t.TempDir(),
+				Branch:  "main",
 			},
 			want: true,
 		},
@@ -61,6 +62,7 @@ func TestIsDirty(t *testing.T) {
 			name: "clean repo",
 			repo: Repository{
 				WorkDir: t.TempDir(),
+				Branch:  "main",
 			},
 			want: false,
 		},
