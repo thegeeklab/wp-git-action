@@ -15,10 +15,7 @@ func RemoteRemove(repo Repository) *types.Cmd {
 		repo.RemoteName,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
 
 	return &types.Cmd{
@@ -35,10 +32,7 @@ func RemoteAdd(repo Repository) *types.Cmd {
 		repo.RemoteURL,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
 
 	return &types.Cmd{

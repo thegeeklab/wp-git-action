@@ -1,14 +1,12 @@
 package git
 
 import (
-	"os"
-
 	"github.com/rs/zerolog/log"
 	"github.com/thegeeklab/wp-plugin-go/v2/types"
 	"golang.org/x/sys/execabs"
 )
 
-// Status returns a command that runs `git status --porcelain` in the given repository's working directory.
+// Status returns a command that runs `git status --porcelain` for the given repository.
 func Status(repo Repository) *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
@@ -16,7 +14,6 @@ func Status(repo Repository) *types.Cmd {
 		"--porcelain",
 	)
 	cmd.Dir = repo.WorkDir
-	cmd.Stderr = os.Stderr
 
 	return &types.Cmd{
 		Cmd: cmd,
@@ -24,8 +21,9 @@ func Status(repo Repository) *types.Cmd {
 }
 
 // IsDirty checks if the given repository has any uncommitted changes.
-// It runs the `git status --porcelain` command and returns true if the output is non-empty,
+// It runs `git status --porcelain` and returns true if the output is non-empty,
 // indicating that there are uncommitted changes in the repository.
+// If there is an error running the git command, it returns false.
 func IsDirty(repo Repository) bool {
 	cmd := Status(repo)
 	cmd.Dir = repo.WorkDir

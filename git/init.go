@@ -5,7 +5,7 @@ import (
 	"golang.org/x/sys/execabs"
 )
 
-// Init creates a new Git repository in the given Repository's WorkDir.
+// Init creates a new Git repository in the specified directory.
 func Init(repo Repository) *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,

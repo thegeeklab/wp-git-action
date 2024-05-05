@@ -3,18 +3,15 @@ package git
 import (
 	"fmt"
 	"os"
-	"os/user"
 	"path/filepath"
 )
 
 const (
-	netrcFile = `
-machine %s
+	netrcFile = `machine %s
 login %s
 password %s
 `
-	configFile = `
-Host *
+	configFile = `Host *
 StrictHostKeyChecking no
 UserKnownHostsFile=/dev/null
 `
@@ -22,65 +19,38 @@ UserKnownHostsFile=/dev/null
 
 const (
 	strictFilePerm = 0o600
-	strictDirPerm  = 0o600
+	strictDirPerm  = 0o700
 )
 
 // WriteKey writes the SSH private key.
-func WriteSSHKey(privateKey string) error {
-	home := "/root"
+func WriteSSHKey(path, key string) error {
+	sshPath := filepath.Join(path, ".ssh")
+	confPath := filepath.Join(sshPath, "config")
+	keyPath := filepath.Join(sshPath, "id_rsa")
 
-	if currentUser, err := user.Current(); err == nil {
-		home = currentUser.HomeDir
+	if err := os.MkdirAll(sshPath, strictDirPerm); err != nil {
+		return fmt.Errorf("failed to create .ssh directory: %w", err)
 	}
 
-	sshpath := filepath.Join(home, ".ssh")
-
-	if err := os.MkdirAll(sshpath, strictDirPerm); err != nil {
-		return err
+	if err := os.WriteFile(confPath, []byte(configFile), strictFilePerm); err != nil {
+		return fmt.Errorf("failed to create .ssh/config file: %w", err)
 	}
 
-	confpath := filepath.Join(sshpath, "config")
-
-	if err := os.WriteFile(
-		confpath,
-		[]byte(configFile),
-		strictFilePerm,
-	); err != nil {
-		return err
+	if err := os.WriteFile(keyPath, []byte(key), strictFilePerm); err != nil {
+		return fmt.Errorf("failed to create .ssh/id_rsa file: %w", err)
 	}
 
-	privpath := filepath.Join(sshpath, "id_rsa")
-
-	return os.WriteFile(
-		privpath,
-		[]byte(privateKey),
-		strictFilePerm,
-	)
+	return nil
 }
 
 // WriteNetrc writes the netrc file.
-func WriteNetrc(machine, login, password string) error {
-	netrcContent := fmt.Sprintf(
-		netrcFile,
-		machine,
-		login,
-		password,
-	)
+func WriteNetrc(path, machine, login, password string) error {
+	netrcPath := filepath.Join(path, ".netrc")
+	netrcContent := fmt.Sprintf(netrcFile, machine, login, password)
 
-	home := "/root"
-
-	if currentUser, err := user.Current(); err == nil {
-		home = currentUser.HomeDir
+	if err := os.WriteFile(netrcPath, []byte(netrcContent), strictFilePerm); err != nil {
+		return fmt.Errorf("failed to create .netrc file: %w", err)
 	}
 
-	netpath := filepath.Join(
-		home,
-		".netrc",
-	)
-
-	return os.WriteFile(
-		netpath,
-		[]byte(netrcContent),
-		strictFilePerm,
-	)
+	return nil
 }

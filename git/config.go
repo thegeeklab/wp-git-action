@@ -7,7 +7,8 @@ import (
 	"golang.org/x/sys/execabs"
 )
 
-// repoUserEmail sets the global git author email.
+// ConfigAutocorrect sets the local git autocorrect configuration for the given repository.
+// The autocorrect setting determines how git handles minor typos in commands.
 func ConfigAutocorrect(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
@@ -24,7 +25,7 @@ func ConfigAutocorrect(repo Repository) *types.Cmd {
 	}
 }
 
-// repoUserEmail sets the global git author email.
+// ConfigUserEmail sets the global git author email.
 func ConfigUserEmail(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
@@ -41,7 +42,7 @@ func ConfigUserEmail(repo Repository) *types.Cmd {
 	}
 }
 
-// repoUserName sets the global git author name.
+// ConfigUserName configures the user.name git config setting for the given repository.
 func ConfigUserName(repo Repository) *types.Cmd {
 	args := []string{
 		"config",
@@ -58,7 +59,7 @@ func ConfigUserName(repo Repository) *types.Cmd {
 	}
 }
 
-// ConfigSSLVerify disables globally the git ssl verification.
+// ConfigSSLVerify configures the http.sslVerify git config setting for the given repository.
 func ConfigSSLVerify(repo Repository, skipVerify bool) *types.Cmd {
 	args := []string{
 		"config",

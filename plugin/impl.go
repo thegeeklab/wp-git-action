@@ -94,10 +94,8 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	var err error
-
+	homeDir := getUserHomeDir()
 	batchCmd := make([]*types.Cmd, 0)
-
 	gitEnv := []string{
 		"GIT_AUTHOR_NAME",
 		"GIT_AUTHOR_EMAIL",
@@ -119,12 +117,13 @@ func (p *Plugin) Execute() error {
 
 	// Write SSH key and netrc file.
 	if p.Settings.SSHKey != "" {
-		if err := git.WriteSSHKey(p.Settings.SSHKey); err != nil {
+		if err := git.WriteSSHKey(homeDir, p.Settings.SSHKey); err != nil {
 			return err
 		}
 	}
 
-	if err := git.WriteNetrc(p.Settings.Netrc.Machine, p.Settings.Netrc.Login, p.Settings.Netrc.Password); err != nil {
+	netrc := p.Settings.Netrc
+	if err := git.WriteNetrc(homeDir, netrc.Machine, netrc.Login, netrc.Password); err != nil {
 		return err
 	}
 
@@ -133,10 +132,12 @@ func (p *Plugin) Execute() error {
 		return err
 	}
 
-	p.Settings.Repo.IsEmpty, err = file.IsDirEmpty(p.Settings.Repo.WorkDir)
+	isEmpty, err := file.IsDirEmpty(p.Settings.Repo.WorkDir)
 	if err != nil {
 		return err
 	}
+
+	p.Settings.Repo.IsEmpty = isEmpty
 
 	isDir, err := file.IsDir(filepath.Join(p.Settings.Repo.WorkDir, ".git"))
 	if err != nil {
@@ -185,7 +186,8 @@ func (p *Plugin) Execute() error {
 	return nil
 }
 
-// HandleClone clones remote.
+// handleClone clones the remote repository into the configured working directory.
+// If the working directory is not empty, it returns an error.
 func (p *Plugin) handleClone() ([]*types.Cmd, error) {
 	var cmds []*types.Cmd
 
@@ -209,7 +211,7 @@ func (p *Plugin) handleCommit() []*types.Cmd {
 
 	cmds = append(cmds, git.Add(p.Settings.Repo))
 
-	if err := git.TestCleanTree(p.Settings.Repo).Run(); err != nil {
+	if err := git.IsCleanTree(p.Settings.Repo).Run(); err != nil {
 		cmds = append(cmds, git.Commit(p.Settings.Repo))
 	}
 

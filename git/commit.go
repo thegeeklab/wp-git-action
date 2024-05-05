@@ -40,7 +40,7 @@ func Add(repo Repository) *types.Cmd {
 }
 
 // TestCleanTree returns non-zero if diff between index and local repository.
-func TestCleanTree(repo Repository) *types.Cmd {
+func IsCleanTree(repo Repository) *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"diff-index",
@@ -64,10 +64,7 @@ func EmptyCommit(repo Repository) *types.Cmd {
 		repo.CommitMsg,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
 
 	if repo.NoVerify {
@@ -86,10 +83,7 @@ func Commit(repo Repository) *types.Cmd {
 		repo.CommitMsg,
 	}
 
-	cmd := execabs.Command(
-		gitBin,
-		args...,
-	)
+	cmd := execabs.Command(gitBin, args...)
 	cmd.Dir = repo.WorkDir
 
 	if repo.NoVerify {
