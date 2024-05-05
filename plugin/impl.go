@@ -22,6 +22,13 @@ var (
 	ErrGitCloneDestintionNotValid = errors.New("destination not valid")
 )
 
+const (
+	ActionClone  Action = "clone"
+	ActionCommit Action = "commit"
+	ActionPush   Action = "push"
+	ActionPages  Action = "pages"
+)
+
 //nolint:revive
 func (p *Plugin) run(ctx context.Context) error {
 	if err := p.Validate(); err != nil {
@@ -48,20 +55,21 @@ func (p *Plugin) Validate() error {
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get working directory: %w", err)
 	}
 
-	for _, action := range p.Settings.Action.Value() {
+	for _, actionStr := range p.Settings.Action.Value() {
+		action := Action(actionStr)
 		switch action {
-		case "clone":
+		case ActionClone:
 			continue
-		case "commit":
+		case ActionCommit:
 			continue
-		case "push":
+		case ActionPush:
 			if p.Settings.SSHKey == "" && p.Settings.Netrc.Password == "" {
 				return ErrAuthSourceNotSet
 			}
-		case "pages":
+		case ActionPages:
 			p.Settings.Pages.Directory = filepath.Join(p.Settings.Repo.WorkDir, p.Settings.Pages.Directory)
 			p.Settings.Repo.WorkDir = filepath.Join(p.Settings.Repo.WorkDir, ".tmp")
 
@@ -85,7 +93,7 @@ func (p *Plugin) Validate() error {
 				return ErrPagesActionNotExclusive
 			}
 		default:
-			return fmt.Errorf("%w: %s", ErrActionUnknown, action)
+			return fmt.Errorf("%w: %s", ErrActionUnknown, actionStr)
 		}
 	}
 
@@ -107,12 +115,12 @@ func (p *Plugin) Execute() error {
 
 	for _, env := range gitEnv {
 		if err := os.Unsetenv(env); err != nil {
-			return err
+			return fmt.Errorf("failed to unset git env vars '%s': %w", env, err)
 		}
 	}
 
 	if err := os.Setenv("GIT_TERMINAL_PROMPT", "0"); err != nil {
-		return err
+		return fmt.Errorf("failed to git env var': %w", err)
 	}
 
 	// Write SSH key and netrc file.
@@ -129,19 +137,19 @@ func (p *Plugin) Execute() error {
 
 	// Handle repo initialization.
 	if err := os.MkdirAll(p.Settings.Repo.WorkDir, os.ModePerm); err != nil {
-		return err
+		return fmt.Errorf("failed to create working directory: %w", err)
 	}
 
 	isEmpty, err := file.IsDirEmpty(p.Settings.Repo.WorkDir)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check working directory: %w", err)
 	}
 
 	p.Settings.Repo.IsEmpty = isEmpty
 
 	isDir, err := file.IsDir(filepath.Join(p.Settings.Repo.WorkDir, ".git"))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to check working directory: %w", err)
 	}
 
 	if !isDir {
@@ -154,20 +162,21 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, git.ConfigUserEmail(p.Settings.Repo))
 	batchCmd = append(batchCmd, git.ConfigSSLVerify(p.Settings.Repo, p.Network.InsecureSkipVerify))
 
-	for _, action := range p.Settings.Action.Value() {
+	for _, actionStr := range p.Settings.Action.Value() {
+		action := Action(actionStr)
 		switch action {
-		case "clone":
+		case ActionClone:
 			cmds, err := p.handleClone()
 			if err != nil {
 				return err
 			}
 
 			batchCmd = append(batchCmd, cmds...)
-		case "commit":
+		case ActionCommit:
 			batchCmd = append(batchCmd, p.handleCommit()...)
-		case "push":
+		case ActionPush:
 			batchCmd = append(batchCmd, p.handlePush()...)
-		case "pages":
+		case ActionPages:
 			cmds, err := p.handlePages()
 			if err != nil {
 				return err

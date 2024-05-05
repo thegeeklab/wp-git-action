@@ -38,6 +38,8 @@ type Pages struct {
 	Delete    bool
 }
 
+type Action string
+
 func New(e wp.ExecuteFunc, build ...string) *Plugin {
 	p := &Plugin{
 		Settings: &Settings{},
