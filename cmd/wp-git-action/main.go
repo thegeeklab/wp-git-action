@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/thegeeklab/wp-git-action/plugin"
-	wp "github.com/thegeeklab/wp-plugin-go/plugin"
+	wp "github.com/thegeeklab/wp-plugin-go/v2/plugin"
 )
 
 //nolint:gochecknoglobals

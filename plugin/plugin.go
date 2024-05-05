@@ -2,7 +2,7 @@ package plugin
 
 import (
 	"github.com/thegeeklab/wp-git-action/git"
-	wp "github.com/thegeeklab/wp-plugin-go/plugin"
+	wp "github.com/thegeeklab/wp-plugin-go/v2/plugin"
 	"github.com/urfave/cli/v2"
 )
 
