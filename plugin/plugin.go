@@ -141,6 +141,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Usage:       "name of the git source branch",
 			EnvVars:     []string{"PLUGIN_BRANCH"},
 			Destination: &settings.Repo.Branch,
+			Value:       "main",
 			Category:    category,
 		},
 		&cli.StringFlag{
