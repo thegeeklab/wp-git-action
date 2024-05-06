@@ -13,10 +13,10 @@ func (r *Repository) Init() *types.Cmd {
 		r.Branch,
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }

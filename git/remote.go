@@ -15,12 +15,12 @@ func (r *Repository) RemoteRemove() *types.Cmd {
 		r.RemoteName,
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
 
 // RemoteAdd adds an additional remote to a git repo.
@@ -32,12 +32,12 @@ func (r *Repository) RemoteAdd() *types.Cmd {
 		r.RemoteURL,
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
 
 // RemotePush pushs the changes from the local head to a remote branch.
@@ -48,18 +48,18 @@ func (r *Repository) RemotePush() *types.Cmd {
 		fmt.Sprintf("HEAD:%s", r.Branch),
 	}
 
-	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = r.WorkDir
-
 	if r.ForcePush {
-		cmd.Args = append(cmd.Args, "--force")
+		args = append(args, "--force")
 	}
 
 	if r.PushFollowTags {
-		cmd.Args = append(cmd.Args, "--follow-tags")
+		args = append(args, "--follow-tags")
 	}
 
-	return &types.Cmd{
-		Cmd: cmd,
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
 	}
+	cmd.Dir = r.WorkDir
+
+	return cmd
 }

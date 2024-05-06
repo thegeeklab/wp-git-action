@@ -17,12 +17,12 @@ func (r *Repository) ConfigAutocorrect() *types.Cmd {
 		r.Autocorrect,
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
 
 // ConfigUserEmail sets the global git author email.
@@ -34,12 +34,12 @@ func (r *Repository) ConfigUserEmail() *types.Cmd {
 		r.Author.Email,
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
 
 // ConfigUserName configures the user.name git config setting for the given repository.
@@ -51,12 +51,12 @@ func (r *Repository) ConfigUserName() *types.Cmd {
 		r.Author.Name,
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
 
 // ConfigSSLVerify configures the http.sslVerify git config setting for the given repository.
@@ -68,12 +68,12 @@ func (r *Repository) ConfigSSLVerify(skipVerify bool) *types.Cmd {
 		strconv.FormatBool(!skipVerify),
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
 
 // ConfigSSHCommand sets custom SSH key.
@@ -85,7 +85,10 @@ func (r *Repository) ConfigSSHCommand(sshKey string) *types.Cmd {
 		"ssh -i " + sshKey,
 	}
 
-	return &types.Cmd{
+	cmd := &types.Cmd{
 		Cmd: execabs.Command(gitBin, args...),
 	}
+	cmd.SetTrace(false)
+
+	return cmd
 }

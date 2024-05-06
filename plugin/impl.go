@@ -137,6 +137,7 @@ func (p *Plugin) Execute() error {
 	if err := os.MkdirAll(p.Settings.Repo.WorkDir, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create working directory: %w", err)
 	}
+	defer os.RemoveAll(p.Settings.Repo.WorkDir)
 
 	p.Settings.Repo.IsEmpty, err = file.IsDirEmpty(p.Settings.Repo.WorkDir)
 	if err != nil {
@@ -215,10 +216,7 @@ func (p *Plugin) handleCommit() []*types.Cmd {
 	var cmds []*types.Cmd
 
 	cmds = append(cmds, p.Settings.Repo.Add())
-
-	if err := p.Settings.Repo.IsCleanTree().Run(); err != nil || p.Settings.Repo.EmptyCommit {
-		cmds = append(cmds, p.Settings.Repo.Commit())
-	}
+	cmds = append(cmds, p.Settings.Repo.Commit())
 
 	return cmds
 }
@@ -231,8 +229,6 @@ func (p *Plugin) handlePush() []*types.Cmd {
 // HandlePages syncs, commits and pushes the changes from the pages directory to the pages branch.
 func (p *Plugin) handlePages() ([]*types.Cmd, error) {
 	var cmds []*types.Cmd
-
-	defer os.RemoveAll(p.Settings.Repo.WorkDir)
 
 	ccmd, err := p.handleClone()
 	if err != nil {

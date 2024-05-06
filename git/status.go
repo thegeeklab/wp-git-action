@@ -8,16 +8,16 @@ import (
 
 // Status returns a command that runs `git status --porcelain` for the given repository.
 func (r *Repository) Status() *types.Cmd {
-	cmd := execabs.Command(
-		gitBin,
-		"status",
-		"--porcelain",
-	)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(
+			gitBin,
+			"status",
+			"--porcelain",
+		),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
 
 // IsDirty checks if the given repository has any uncommitted changes.
