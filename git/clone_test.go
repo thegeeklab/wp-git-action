@@ -32,7 +32,7 @@ func TestFetchSource(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := FetchSource(tt.repo)
+			cmd := tt.repo.FetchSource()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
@@ -65,7 +65,7 @@ func TestCheckoutHead(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := CheckoutHead(tt.repo)
+			cmd := tt.repo.CheckoutHead()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})

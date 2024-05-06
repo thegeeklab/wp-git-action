@@ -9,16 +9,16 @@ import (
 
 // ConfigAutocorrect sets the local git autocorrect configuration for the given repository.
 // The autocorrect setting determines how git handles minor typos in commands.
-func ConfigAutocorrect(repo Repository) *types.Cmd {
+func (r *Repository) ConfigAutocorrect() *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
 		"help.autocorrect",
-		repo.Autocorrect,
+		r.Autocorrect,
 	}
 
 	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,
@@ -26,16 +26,16 @@ func ConfigAutocorrect(repo Repository) *types.Cmd {
 }
 
 // ConfigUserEmail sets the global git author email.
-func ConfigUserEmail(repo Repository) *types.Cmd {
+func (r *Repository) ConfigUserEmail() *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
 		"user.email",
-		repo.Author.Email,
+		r.Author.Email,
 	}
 
 	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,
@@ -43,16 +43,16 @@ func ConfigUserEmail(repo Repository) *types.Cmd {
 }
 
 // ConfigUserName configures the user.name git config setting for the given repository.
-func ConfigUserName(repo Repository) *types.Cmd {
+func (r *Repository) ConfigUserName() *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
 		"user.name",
-		repo.Author.Name,
+		r.Author.Name,
 	}
 
 	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,
@@ -60,7 +60,7 @@ func ConfigUserName(repo Repository) *types.Cmd {
 }
 
 // ConfigSSLVerify configures the http.sslVerify git config setting for the given repository.
-func ConfigSSLVerify(repo Repository, skipVerify bool) *types.Cmd {
+func (r *Repository) ConfigSSLVerify(skipVerify bool) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -69,7 +69,7 @@ func ConfigSSLVerify(repo Repository, skipVerify bool) *types.Cmd {
 	}
 
 	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,

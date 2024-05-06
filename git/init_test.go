@@ -24,7 +24,7 @@ func TestInit(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := Init(tt.repo)
+			cmd := tt.repo.Init()
 			require.Equal(t, tt.expected, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})

@@ -39,7 +39,7 @@ func TestRemoteRemove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := RemoteRemove(tt.repo)
+			cmd := tt.repo.RemoteRemove()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
@@ -73,7 +73,7 @@ func TestRemoteAdd(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := RemoteAdd(tt.repo)
+			cmd := tt.repo.RemoteAdd()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
@@ -131,7 +131,7 @@ func TestRemotePush(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := RemotePush(tt.repo)
+			cmd := tt.repo.RemotePush()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})

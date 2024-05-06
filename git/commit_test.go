@@ -16,23 +16,14 @@ func TestAdd(t *testing.T) {
 			name: "add all files",
 			repo: Repository{
 				WorkDir: "/path/to/repo",
-				Add:     "",
 			},
 			want: []string{gitBin, "add", "--all"},
-		},
-		{
-			name: "add specific file",
-			repo: Repository{
-				WorkDir: "/path/to/repo",
-				Add:     "file.go",
-			},
-			want: []string{gitBin, "add", "file.go"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := Add(tt.repo)
+			cmd := tt.repo.Add()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
@@ -63,41 +54,50 @@ func TestIsCleanTree(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := IsCleanTree(tt.repo)
+			cmd := tt.repo.IsCleanTree()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }
 
-func TestEmptyCommit(t *testing.T) {
+func TestCommit(t *testing.T) {
 	tests := []struct {
 		name string
 		repo Repository
 		want []string
 	}{
 		{
-			name: "empty commit with default options",
+			name: "commit with message",
 			repo: Repository{
 				WorkDir:   "/path/to/repo",
-				CommitMsg: "Empty commit",
+				CommitMsg: "Initial commit",
 			},
-			want: []string{gitBin, "commit", "--allow-empty", "-m", "Empty commit"},
+			want: []string{gitBin, "commit", "-m", "Initial commit"},
 		},
 		{
-			name: "empty commit with no-verify option",
+			name: "commit with empty commit",
+			repo: Repository{
+				WorkDir:     "/path/to/repo",
+				CommitMsg:   "Empty commit",
+				EmptyCommit: true,
+			},
+			want: []string{gitBin, "commit", "-m", "Empty commit", "--allow-empty"},
+		},
+		{
+			name: "commit with no verify",
 			repo: Repository{
 				WorkDir:   "/path/to/repo",
-				CommitMsg: "Empty commit",
+				CommitMsg: "No verify commit",
 				NoVerify:  true,
 			},
-			want: []string{gitBin, "commit", "--allow-empty", "-m", "Empty commit", "--no-verify"},
+			want: []string{gitBin, "commit", "-m", "No verify commit", "--no-verify"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := EmptyCommit(tt.repo)
+			cmd := tt.repo.Commit()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})

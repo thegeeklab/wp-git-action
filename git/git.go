@@ -1,7 +1,5 @@
 package git
 
-const gitBin = "/usr/bin/git"
-
 type Author struct {
 	Name  string
 	Email string
@@ -12,7 +10,6 @@ type Repository struct {
 	RemoteURL  string
 	Branch     string
 
-	Add       string
 	CommitMsg string
 
 	Autocorrect    string
@@ -25,3 +22,5 @@ type Repository struct {
 
 	Author Author
 }
+
+const gitBin = "/usr/bin/git"
