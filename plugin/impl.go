@@ -9,6 +9,7 @@ import (
 
 	"github.com/thegeeklab/wp-plugin-go/v2/file"
 	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	"github.com/thegeeklab/wp-plugin-go/v2/util"
 )
 
 var (
@@ -102,7 +103,7 @@ func (p *Plugin) Validate() error {
 func (p *Plugin) Execute() error {
 	var err error
 
-	homeDir := GetUserHomeDir()
+	homeDir := util.GetUserHomeDir()
 	batchCmd := make([]*types.Cmd, 0)
 	gitEnv := []string{
 		"GIT_AUTHOR_NAME",

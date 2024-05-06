@@ -3,7 +3,6 @@ package plugin
 import (
 	"fmt"
 	"os"
-	"os/user"
 	"path/filepath"
 )
 
@@ -22,16 +21,6 @@ const (
 	strictFilePerm = 0o600
 	strictDirPerm  = 0o700
 )
-
-func GetUserHomeDir() string {
-	home := "/root"
-
-	if currentUser, err := user.Current(); err == nil {
-		home = currentUser.HomeDir
-	}
-
-	return home
-}
 
 // WriteKey writes the SSH private key.
 func WriteSSHKey(path, key string) error {
