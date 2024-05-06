@@ -8,15 +8,15 @@ import (
 )
 
 // FetchSource fetches the source from remote.
-func FetchSource(repo Repository) *types.Cmd {
+func (r Repository) FetchSource() *types.Cmd {
 	args := []string{
 		"fetch",
 		"origin",
-		fmt.Sprintf("+%s:", repo.Branch),
+		fmt.Sprintf("+%s:", r.Branch),
 	}
 
 	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,
@@ -24,15 +24,15 @@ func FetchSource(repo Repository) *types.Cmd {
 }
 
 // CheckoutHead handles branch checkout.
-func CheckoutHead(repo Repository) *types.Cmd {
+func (r Repository) CheckoutHead() *types.Cmd {
 	args := []string{
 		"checkout",
 		"-qf",
-		repo.Branch,
+		r.Branch,
 	}
 
 	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,

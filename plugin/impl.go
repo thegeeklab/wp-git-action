@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/thegeeklab/wp-git-action/git"
 	"github.com/thegeeklab/wp-plugin-go/v2/file"
 	"github.com/thegeeklab/wp-plugin-go/v2/types"
 )
@@ -52,7 +51,6 @@ func (p *Plugin) Validate() error {
 
 	p.Settings.Repo.Autocorrect = "never"
 	p.Settings.Repo.RemoteName = "origin"
-	p.Settings.Repo.Add = ""
 
 	if err != nil {
 		return fmt.Errorf("failed to get working directory: %w", err)
@@ -104,7 +102,7 @@ func (p *Plugin) Validate() error {
 func (p *Plugin) Execute() error {
 	var err error
 
-	homeDir := getUserHomeDir()
+	homeDir := GetUserHomeDir()
 	batchCmd := make([]*types.Cmd, 0)
 	gitEnv := []string{
 		"GIT_AUTHOR_NAME",
@@ -127,13 +125,13 @@ func (p *Plugin) Execute() error {
 
 	// Write SSH key and netrc file.
 	if p.Settings.SSHKey != "" {
-		if err := git.WriteSSHKey(homeDir, p.Settings.SSHKey); err != nil {
+		if err := WriteSSHKey(homeDir, p.Settings.SSHKey); err != nil {
 			return err
 		}
 	}
 
 	netrc := p.Settings.Netrc
-	if err := git.WriteNetrc(homeDir, netrc.Machine, netrc.Login, netrc.Password); err != nil {
+	if err := WriteNetrc(homeDir, netrc.Machine, netrc.Login, netrc.Password); err != nil {
 		return err
 	}
 
@@ -153,14 +151,14 @@ func (p *Plugin) Execute() error {
 	}
 
 	if !isDir {
-		batchCmd = append(batchCmd, git.Init(p.Settings.Repo))
+		batchCmd = append(batchCmd, p.Settings.Repo.Init())
 	}
 
 	// Handle repo configuration.
-	batchCmd = append(batchCmd, git.ConfigAutocorrect(p.Settings.Repo))
-	batchCmd = append(batchCmd, git.ConfigUserName(p.Settings.Repo))
-	batchCmd = append(batchCmd, git.ConfigUserEmail(p.Settings.Repo))
-	batchCmd = append(batchCmd, git.ConfigSSLVerify(p.Settings.Repo, p.Network.InsecureSkipVerify))
+	batchCmd = append(batchCmd, p.Settings.Repo.ConfigAutocorrect())
+	batchCmd = append(batchCmd, p.Settings.Repo.ConfigUserName())
+	batchCmd = append(batchCmd, p.Settings.Repo.ConfigUserEmail())
+	batchCmd = append(batchCmd, p.Settings.Repo.ConfigSSLVerify(p.Network.InsecureSkipVerify))
 
 	for _, actionStr := range p.Settings.Action.Value() {
 		action := Action(actionStr)
@@ -205,11 +203,11 @@ func (p *Plugin) handleClone() ([]*types.Cmd, error) {
 	}
 
 	if p.Settings.Repo.RemoteURL != "" {
-		cmds = append(cmds, git.RemoteAdd(p.Settings.Repo))
+		cmds = append(cmds, p.Settings.Repo.RemoteAdd())
 	}
 
-	cmds = append(cmds, git.FetchSource(p.Settings.Repo))
-	cmds = append(cmds, git.CheckoutHead(p.Settings.Repo))
+	cmds = append(cmds, p.Settings.Repo.FetchSource())
+	cmds = append(cmds, p.Settings.Repo.CheckoutHead())
 
 	return cmds, nil
 }
@@ -218,14 +216,10 @@ func (p *Plugin) handleClone() ([]*types.Cmd, error) {
 func (p *Plugin) handleCommit() []*types.Cmd {
 	var cmds []*types.Cmd
 
-	cmds = append(cmds, git.Add(p.Settings.Repo))
+	cmds = append(cmds, p.Settings.Repo.Add())
 
-	if err := git.IsCleanTree(p.Settings.Repo).Run(); err != nil {
-		cmds = append(cmds, git.Commit(p.Settings.Repo))
-	}
-
-	if p.Settings.Repo.EmptyCommit {
-		cmds = append(cmds, git.EmptyCommit(p.Settings.Repo))
+	if err := p.Settings.Repo.IsCleanTree().Run(); err != nil || p.Settings.Repo.EmptyCommit {
+		cmds = append(cmds, p.Settings.Repo.Commit())
 	}
 
 	return cmds
@@ -233,7 +227,7 @@ func (p *Plugin) handleCommit() []*types.Cmd {
 
 // HandlePush pushs changes to remote.
 func (p *Plugin) handlePush() []*types.Cmd {
-	return []*types.Cmd{git.RemotePush(p.Settings.Repo)}
+	return []*types.Cmd{p.Settings.Repo.RemotePush()}
 }
 
 // HandlePages syncs, commits and pushes the changes from the pages directory to the pages branch.

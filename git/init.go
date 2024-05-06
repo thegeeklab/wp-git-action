@@ -6,15 +6,15 @@ import (
 )
 
 // Init creates a new Git repository in the specified directory.
-func Init(repo Repository) *types.Cmd {
+func (r Repository) Init() *types.Cmd {
 	args := []string{
 		"init",
 		"-b",
-		repo.Branch,
+		r.Branch,
 	}
 
 	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,

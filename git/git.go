@@ -12,7 +12,6 @@ type Repository struct {
 	RemoteURL  string
 	Branch     string
 
-	Add       string
 	CommitMsg string
 
 	Autocorrect    string

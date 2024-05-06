@@ -37,7 +37,7 @@ func TestStatus(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := Status(tt.repo)
+			cmd := tt.repo.Status()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
@@ -70,7 +70,7 @@ func TestIsDirty(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Init(tt.repo).Run(); err != nil {
+			if err := tt.repo.Init().Run(); err != nil {
 				require.NoError(t, err)
 			}
 
@@ -79,7 +79,7 @@ func TestIsDirty(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			isDirty := IsDirty(tt.repo)
+			isDirty := tt.repo.IsDirty()
 			require.Equal(t, tt.want, isDirty)
 		})
 	}

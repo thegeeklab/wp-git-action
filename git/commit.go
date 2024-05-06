@@ -6,14 +6,14 @@ import (
 )
 
 // ForceAdd forces the addition of all dirty files.
-func ForceAdd(repo Repository) *types.Cmd {
+func (r Repository) ForceAdd() *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"add",
 		"--all",
 		"--force",
 	)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,
@@ -21,18 +21,13 @@ func ForceAdd(repo Repository) *types.Cmd {
 }
 
 // Add updates the index to match the working tree.
-func Add(repo Repository) *types.Cmd {
+func (r Repository) Add() *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"add",
+		"--all",
 	)
-	cmd.Dir = repo.WorkDir
-
-	if repo.Add != "" {
-		cmd.Args = append(cmd.Args, repo.Add)
-	} else {
-		cmd.Args = append(cmd.Args, "--all")
-	}
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,
@@ -40,7 +35,7 @@ func Add(repo Repository) *types.Cmd {
 }
 
 // TestCleanTree returns non-zero if diff between index and local repository.
-func IsCleanTree(repo Repository) *types.Cmd {
+func (r Repository) IsCleanTree() *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"diff-index",
@@ -48,47 +43,33 @@ func IsCleanTree(repo Repository) *types.Cmd {
 		"HEAD",
 		"--ignore-submodules",
 	)
-	cmd.Dir = repo.WorkDir
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,
 	}
 }
 
-// EmptyCommit simply create an empty commit.
-func EmptyCommit(repo Repository) *types.Cmd {
-	args := []string{
-		"commit",
-		"--allow-empty",
-		"-m",
-		repo.CommitMsg,
-	}
-
-	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
-
-	if repo.NoVerify {
-		cmd.Args = append(cmd.Args, "--no-verify")
-	}
-
-	return &types.Cmd{
-		Cmd: cmd,
-	}
-}
-
-func Commit(repo Repository) *types.Cmd {
+// Commit creates a new commit with the specified commit message.
+// If EmptyCommit is true, it will allow an empty commit.
+// If NoVerify is true, it will skip the pre-commit and commit-msg hooks.
+func (r Repository) Commit() *types.Cmd {
 	args := []string{
 		"commit",
 		"-m",
-		repo.CommitMsg,
+		r.CommitMsg,
+	}
+
+	if r.EmptyCommit {
+		args = append(args, "--allow-empty")
+	}
+
+	if r.NoVerify {
+		args = append(args, "--no-verify")
 	}
 
 	cmd := execabs.Command(gitBin, args...)
-	cmd.Dir = repo.WorkDir
-
-	if repo.NoVerify {
-		cmd.Args = append(cmd.Args, "--no-verify")
-	}
+	cmd.Dir = r.WorkDir
 
 	return &types.Cmd{
 		Cmd: cmd,

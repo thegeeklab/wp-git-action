@@ -32,7 +32,7 @@ func TestConfigAutocorrect(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := ConfigAutocorrect(tt.repo)
+			cmd := tt.repo.ConfigAutocorrect()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
@@ -59,7 +59,7 @@ func TestConfigUserEmail(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := ConfigUserEmail(tt.repo)
+			cmd := tt.repo.ConfigUserEmail()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
@@ -86,7 +86,7 @@ func TestConfigUserName(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := ConfigUserName(tt.repo)
+			cmd := tt.repo.ConfigUserName()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
@@ -116,7 +116,7 @@ func TestConfigSSLVerify(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := ConfigSSLVerify(tt.repo, tt.skipVerify)
+			cmd := tt.repo.ConfigSSLVerify(tt.skipVerify)
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
