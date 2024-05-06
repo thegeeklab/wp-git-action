@@ -46,15 +46,14 @@ func (p *Plugin) run(ctx context.Context) error {
 func (p *Plugin) Validate() error {
 	var err error
 
-	if p.Settings.Repo.WorkDir == "" {
-		p.Settings.Repo.WorkDir, err = os.Getwd()
-	}
-
 	p.Settings.Repo.Autocorrect = "never"
 	p.Settings.Repo.RemoteName = "origin"
 
-	if err != nil {
-		return fmt.Errorf("failed to get working directory: %w", err)
+	if p.Settings.Repo.WorkDir == "" {
+		p.Settings.Repo.WorkDir, err = os.Getwd()
+		if err != nil {
+			return fmt.Errorf("failed to get working directory: %w", err)
+		}
 	}
 
 	for _, actionStr := range p.Settings.Action.Value() {
