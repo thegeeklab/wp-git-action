@@ -15,12 +15,12 @@ func (r *Repository) FetchSource() *types.Cmd {
 		fmt.Sprintf("+%s:", r.Branch),
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
 
 // CheckoutHead handles branch checkout.
@@ -31,10 +31,10 @@ func (r *Repository) CheckoutHead() *types.Cmd {
 		r.Branch,
 	}
 
-	cmd := execabs.Command(gitBin, args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }

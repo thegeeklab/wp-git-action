@@ -34,10 +34,10 @@ func SyncDirectories(exclude []string, del bool, src, dest string) *types.Cmd {
 		dest,
 	)
 
-	cmd := execabs.Command("rsync", args...)
+	cmd := &types.Cmd{
+		Cmd: execabs.Command("rsync", args...),
+	}
 	cmd.Dir = src
 
-	return &types.Cmd{
-		Cmd: cmd,
-	}
+	return cmd
 }
