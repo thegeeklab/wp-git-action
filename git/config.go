@@ -9,7 +9,7 @@ import (
 
 // ConfigAutocorrect sets the local git autocorrect configuration for the given repository.
 // The autocorrect setting determines how git handles minor typos in commands.
-func (r Repository) ConfigAutocorrect() *types.Cmd {
+func (r *Repository) ConfigAutocorrect() *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -26,7 +26,7 @@ func (r Repository) ConfigAutocorrect() *types.Cmd {
 }
 
 // ConfigUserEmail sets the global git author email.
-func (r Repository) ConfigUserEmail() *types.Cmd {
+func (r *Repository) ConfigUserEmail() *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -43,7 +43,7 @@ func (r Repository) ConfigUserEmail() *types.Cmd {
 }
 
 // ConfigUserName configures the user.name git config setting for the given repository.
-func (r Repository) ConfigUserName() *types.Cmd {
+func (r *Repository) ConfigUserName() *types.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -60,7 +60,7 @@ func (r Repository) ConfigUserName() *types.Cmd {
 }
 
 // ConfigSSLVerify configures the http.sslVerify git config setting for the given repository.
-func (r Repository) ConfigSSLVerify(skipVerify bool) *types.Cmd {
+func (r *Repository) ConfigSSLVerify(skipVerify bool) *types.Cmd {
 	args := []string{
 		"config",
 		"--local",

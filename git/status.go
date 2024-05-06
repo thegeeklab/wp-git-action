@@ -7,7 +7,7 @@ import (
 )
 
 // Status returns a command that runs `git status --porcelain` for the given repository.
-func (r Repository) Status() *types.Cmd {
+func (r *Repository) Status() *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"status",
@@ -24,7 +24,7 @@ func (r Repository) Status() *types.Cmd {
 // It runs `git status --porcelain` and returns true if the output is non-empty,
 // indicating that there are uncommitted changes in the repository.
 // If there is an error running the git command, it returns false.
-func (r Repository) IsDirty() bool {
+func (r *Repository) IsDirty() bool {
 	cmd := r.Status()
 	cmd.Dir = r.WorkDir
 

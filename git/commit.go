@@ -6,7 +6,7 @@ import (
 )
 
 // ForceAdd forces the addition of all dirty files.
-func (r Repository) ForceAdd() *types.Cmd {
+func (r *Repository) ForceAdd() *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"add",
@@ -21,7 +21,7 @@ func (r Repository) ForceAdd() *types.Cmd {
 }
 
 // Add updates the index to match the working tree.
-func (r Repository) Add() *types.Cmd {
+func (r *Repository) Add() *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"add",
@@ -35,7 +35,7 @@ func (r Repository) Add() *types.Cmd {
 }
 
 // TestCleanTree returns non-zero if diff between index and local repository.
-func (r Repository) IsCleanTree() *types.Cmd {
+func (r *Repository) IsCleanTree() *types.Cmd {
 	cmd := execabs.Command(
 		gitBin,
 		"diff-index",
@@ -53,7 +53,7 @@ func (r Repository) IsCleanTree() *types.Cmd {
 // Commit creates a new commit with the specified commit message.
 // If EmptyCommit is true, it will allow an empty commit.
 // If NoVerify is true, it will skip the pre-commit and commit-msg hooks.
-func (r Repository) Commit() *types.Cmd {
+func (r *Repository) Commit() *types.Cmd {
 	args := []string{
 		"commit",
 		"-m",

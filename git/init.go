@@ -6,7 +6,7 @@ import (
 )
 
 // Init creates a new Git repository in the specified directory.
-func (r Repository) Init() *types.Cmd {
+func (r *Repository) Init() *types.Cmd {
 	args := []string{
 		"init",
 		"-b",

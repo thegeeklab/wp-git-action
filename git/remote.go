@@ -8,7 +8,7 @@ import (
 )
 
 // RemoteRemove drops the defined remote from a git repo.
-func (r Repository) RemoteRemove() *types.Cmd {
+func (r *Repository) RemoteRemove() *types.Cmd {
 	args := []string{
 		"remote",
 		"rm",
@@ -24,7 +24,7 @@ func (r Repository) RemoteRemove() *types.Cmd {
 }
 
 // RemoteAdd adds an additional remote to a git repo.
-func (r Repository) RemoteAdd() *types.Cmd {
+func (r *Repository) RemoteAdd() *types.Cmd {
 	args := []string{
 		"remote",
 		"add",
@@ -41,7 +41,7 @@ func (r Repository) RemoteAdd() *types.Cmd {
 }
 
 // RemotePush pushs the changes from the local head to a remote branch.
-func (r Repository) RemotePush() *types.Cmd {
+func (r *Repository) RemotePush() *types.Cmd {
 	args := []string{
 		"push",
 		r.RemoteName,

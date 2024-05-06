@@ -8,7 +8,7 @@ import (
 )
 
 // FetchSource fetches the source from remote.
-func (r Repository) FetchSource() *types.Cmd {
+func (r *Repository) FetchSource() *types.Cmd {
 	args := []string{
 		"fetch",
 		"origin",
@@ -24,7 +24,7 @@ func (r Repository) FetchSource() *types.Cmd {
 }
 
 // CheckoutHead handles branch checkout.
-func (r Repository) CheckoutHead() *types.Cmd {
+func (r *Repository) CheckoutHead() *types.Cmd {
 	args := []string{
 		"checkout",
 		"-qf",
