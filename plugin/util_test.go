@@ -9,49 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWriteSSHKey(t *testing.T) {
-	tests := []struct {
-		name       string
-		privateKey string
-		dir        string
-		wantErr    bool
-	}{
-		{
-			name:       "valid private key",
-			privateKey: "valid_private_key",
-			dir:        t.TempDir(),
-			wantErr:    false,
-		},
-		{
-			name:       "empty private key",
-			privateKey: "",
-			dir:        t.TempDir(),
-			wantErr:    false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			err := WriteSSHKey(tt.dir, tt.privateKey)
-			if tt.wantErr {
-				assert.Error(t, err)
-
-				return
-			}
-
-			assert.NoError(t, err)
-
-			privateKeyPath := filepath.Join(tt.dir, ".ssh", "id_rsa")
-			_, err = os.Stat(privateKeyPath)
-			assert.NoError(t, err)
-
-			configPath := filepath.Join(tt.dir, ".ssh", "config")
-			_, err = os.Stat(configPath)
-			assert.NoError(t, err)
-		})
-	}
-}
-
 func TestWriteNetrc(t *testing.T) {
 	tests := []struct {
 		name     string

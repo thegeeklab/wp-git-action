@@ -125,9 +125,7 @@ func (p *Plugin) Execute() error {
 
 	// Write SSH key and netrc file.
 	if p.Settings.SSHKey != "" {
-		if err := WriteSSHKey(homeDir, p.Settings.SSHKey); err != nil {
-			return err
-		}
+		batchCmd = append(batchCmd, p.Settings.Repo.ConfigSSHCommand(p.Settings.SSHKey))
 	}
 
 	netrc := p.Settings.Netrc

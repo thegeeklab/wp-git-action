@@ -75,3 +75,17 @@ func (r *Repository) ConfigSSLVerify(skipVerify bool) *types.Cmd {
 		Cmd: cmd,
 	}
 }
+
+// ConfigSSHCommand sets custom SSH key.
+func (r *Repository) ConfigSSHCommand(sshKey string) *types.Cmd {
+	args := []string{
+		"config",
+		"--local",
+		"core.sshCommand",
+		"ssh -i " + sshKey,
+	}
+
+	return &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
+}
