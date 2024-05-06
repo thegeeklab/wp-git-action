@@ -3,7 +3,7 @@ package git
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConfigAutocorrect(t *testing.T) {
@@ -33,8 +33,8 @@ func TestConfigAutocorrect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigAutocorrect()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }
@@ -60,8 +60,8 @@ func TestConfigUserEmail(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigUserEmail()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }
@@ -87,8 +87,8 @@ func TestConfigUserName(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigUserName()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }
@@ -117,8 +117,8 @@ func TestConfigSSLVerify(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigSSLVerify(tt.skipVerify)
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }

@@ -3,7 +3,7 @@ package git
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInit(t *testing.T) {
@@ -25,8 +25,8 @@ func TestInit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.Init()
-			require.Equal(t, tt.expected, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.expected, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }

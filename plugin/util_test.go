@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestWriteSSHKey(t *testing.T) {
@@ -34,20 +34,20 @@ func TestWriteSSHKey(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := WriteSSHKey(tt.dir, tt.privateKey)
 			if tt.wantErr {
-				require.Error(t, err)
+				assert.Error(t, err)
 
 				return
 			}
 
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			privateKeyPath := filepath.Join(tt.dir, ".ssh", "id_rsa")
 			_, err = os.Stat(privateKeyPath)
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			configPath := filepath.Join(tt.dir, ".ssh", "config")
 			_, err = os.Stat(configPath)
-			require.NoError(t, err)
+			assert.NoError(t, err)
 		})
 	}
 }
@@ -75,22 +75,22 @@ func TestWriteNetrc(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := WriteNetrc(tt.path, tt.machine, tt.login, tt.password)
 			if tt.wantErr {
-				require.Error(t, err)
+				assert.Error(t, err)
 
 				return
 			}
 
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			netrcPath := filepath.Join(tt.path, ".netrc")
 			_, err = os.Stat(netrcPath)
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			content, err := os.ReadFile(netrcPath)
-			require.NoError(t, err)
+			assert.NoError(t, err)
 
 			expected := fmt.Sprintf("machine %s\nlogin %s\npassword %s\n", tt.machine, tt.login, tt.password)
-			require.Equal(t, expected, string(content))
+			assert.Equal(t, expected, string(content))
 		})
 	}
 }

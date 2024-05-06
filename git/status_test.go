@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStatus(t *testing.T) {
@@ -38,8 +38,8 @@ func TestStatus(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.Status()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }
@@ -71,16 +71,16 @@ func TestIsDirty(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := tt.repo.Init().Run(); err != nil {
-				require.NoError(t, err)
+				assert.NoError(t, err)
 			}
 
 			if tt.want {
 				_, err := os.Create(filepath.Join(tt.repo.WorkDir, "dummy"))
-				require.NoError(t, err)
+				assert.NoError(t, err)
 			}
 
 			isDirty := tt.repo.IsDirty()
-			require.Equal(t, tt.want, isDirty)
+			assert.Equal(t, tt.want, isDirty)
 		})
 	}
 }

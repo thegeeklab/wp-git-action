@@ -3,7 +3,7 @@ package git
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAdd(t *testing.T) {
@@ -24,8 +24,8 @@ func TestAdd(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.Add()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }
@@ -55,8 +55,8 @@ func TestIsCleanTree(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.IsCleanTree()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }
@@ -98,8 +98,8 @@ func TestCommit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.Commit()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-			require.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
 		})
 	}
 }
