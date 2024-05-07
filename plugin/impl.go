@@ -184,6 +184,10 @@ func (p *Plugin) Execute() error {
 	}
 
 	for _, cmd := range batchCmd {
+		if cmd == nil {
+			continue
+		}
+
 		if err := cmd.Run(); err != nil {
 			return err
 		}
