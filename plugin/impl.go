@@ -23,10 +23,10 @@ var (
 )
 
 const (
-	ActionClone  Action = "clone"
-	ActionCommit Action = "commit"
-	ActionPush   Action = "push"
-	ActionPages  Action = "pages"
+	GitActionClone  GitAction = "clone"
+	GitActionCommit GitAction = "commit"
+	GitActionPush   GitAction = "push"
+	GitActionPages  GitAction = "pages"
 )
 
 //nolint:revive
@@ -57,17 +57,17 @@ func (p *Plugin) Validate() error {
 	}
 
 	for _, actionStr := range p.Settings.Action.Value() {
-		action := Action(actionStr)
+		action := GitAction(actionStr)
 		switch action {
-		case ActionClone:
+		case GitActionClone:
 			continue
-		case ActionCommit:
+		case GitActionCommit:
 			continue
-		case ActionPush:
+		case GitActionPush:
 			if p.Settings.SSHKey == "" && p.Settings.Netrc.Password == "" {
 				return ErrAuthSourceNotSet
 			}
-		case ActionPages:
+		case GitActionPages:
 			p.Settings.Pages.Directory = filepath.Join(p.Settings.Repo.WorkDir, p.Settings.Pages.Directory)
 			p.Settings.Repo.WorkDir = filepath.Join(p.Settings.Repo.WorkDir, ".tmp")
 
@@ -160,20 +160,20 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Repo.ConfigSSLVerify(p.Network.InsecureSkipVerify))
 
 	for _, actionStr := range p.Settings.Action.Value() {
-		action := Action(actionStr)
+		action := GitAction(actionStr)
 		switch action {
-		case ActionClone:
+		case GitActionClone:
 			cmds, err := p.handleClone()
 			if err != nil {
 				return err
 			}
 
 			batchCmd = append(batchCmd, cmds...)
-		case ActionCommit:
+		case GitActionCommit:
 			batchCmd = append(batchCmd, p.handleCommit()...)
-		case ActionPush:
+		case GitActionPush:
 			batchCmd = append(batchCmd, p.handlePush()...)
-		case ActionPages:
+		case GitActionPages:
 			cmds, err := p.handlePages()
 			if err != nil {
 				return err

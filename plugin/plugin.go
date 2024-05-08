@@ -38,7 +38,7 @@ type Pages struct {
 	Delete    bool
 }
 
-type Action string
+type GitAction string
 
 func New(e wp.ExecuteFunc, build ...string) *Plugin {
 	p := &Plugin{
