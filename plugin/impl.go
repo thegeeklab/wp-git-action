@@ -163,14 +163,8 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Repo.ConfigUserEmail())
 	batchCmd = append(batchCmd, p.Settings.Repo.ConfigSSLVerify(p.Network.InsecureSkipVerify))
 
-	for _, cmd := range batchCmd {
-		if cmd == nil {
-			continue
-		}
-
-		if err := cmd.Run(); err != nil {
-			return err
-		}
+	if err := ExecBatch(batchCmd); err != nil {
+		return err
 	}
 
 	for _, actionStr := range p.Settings.Action.Value() {
@@ -234,17 +228,7 @@ func (p *Plugin) handleClone() error {
 	batchCmd = append(batchCmd, p.Settings.Repo.FetchSource())
 	batchCmd = append(batchCmd, p.Settings.Repo.CheckoutHead())
 
-	for _, cmd := range batchCmd {
-		if cmd == nil {
-			continue
-		}
-
-		if err := cmd.Run(); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return ExecBatch(batchCmd)
 }
 
 // HandleCommit commits changes locally.

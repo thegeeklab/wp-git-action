@@ -30,6 +30,37 @@ func TestAdd(t *testing.T) {
 	}
 }
 
+func TestIsCleanTree(t *testing.T) {
+	tests := []struct {
+		name string
+		repo Repository
+		want []string
+	}{
+		{
+			name: "clean working tree",
+			repo: Repository{
+				WorkDir: "/path/to/repo",
+			},
+			want: []string{gitBin, "diff-index", "--quiet", "HEAD", "--ignore-submodules"},
+		},
+		{
+			name: "unclean working tree",
+			repo: Repository{
+				WorkDir: "/path/to/unclean/repo",
+			},
+			want: []string{gitBin, "diff-index", "--quiet", "HEAD", "--ignore-submodules"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := tt.repo.IsCleanTree()
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+		})
+	}
+}
+
 func TestCommit(t *testing.T) {
 	tests := []struct {
 		name string
