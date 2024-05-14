@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/thegeeklab/wp-plugin-go/v2/file"
 	"github.com/thegeeklab/wp-plugin-go/v2/types"
 	"github.com/thegeeklab/wp-plugin-go/v2/util"
@@ -246,6 +248,7 @@ func (p *Plugin) handlePages() ([]*types.Cmd, error) {
 			p.Settings.Pages.Delete,
 			p.Settings.Pages.Directory,
 			p.Settings.Repo.WorkDir,
+			(log.Logger.GetLevel() == zerolog.DebugLevel),
 		),
 	)
 
