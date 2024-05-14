@@ -21,6 +21,7 @@ func (r *Repository) ConfigAutocorrect() *types.Cmd {
 		Cmd: execabs.Command(gitBin, args...),
 	}
 	cmd.Dir = r.WorkDir
+	cmd.SetTrace(false)
 
 	return cmd
 }
@@ -38,6 +39,7 @@ func (r *Repository) ConfigUserEmail() *types.Cmd {
 		Cmd: execabs.Command(gitBin, args...),
 	}
 	cmd.Dir = r.WorkDir
+	cmd.SetTrace(false)
 
 	return cmd
 }
@@ -55,6 +57,7 @@ func (r *Repository) ConfigUserName() *types.Cmd {
 		Cmd: execabs.Command(gitBin, args...),
 	}
 	cmd.Dir = r.WorkDir
+	cmd.SetTrace(false)
 
 	return cmd
 }
@@ -72,6 +75,7 @@ func (r *Repository) ConfigSSLVerify(skipVerify bool) *types.Cmd {
 		Cmd: execabs.Command(gitBin, args...),
 	}
 	cmd.Dir = r.WorkDir
+	cmd.SetTrace(false)
 
 	return cmd
 }
@@ -88,6 +92,7 @@ func (r *Repository) ConfigSSHCommand(sshKey string) *types.Cmd {
 	cmd := &types.Cmd{
 		Cmd: execabs.Command(gitBin, args...),
 	}
+	cmd.Dir = r.WorkDir
 	cmd.SetTrace(false)
 
 	return cmd
