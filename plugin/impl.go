@@ -165,6 +165,8 @@ func (p *Plugin) Execute() error {
 		action := GitAction(actionStr)
 		switch action {
 		case GitActionClone:
+			log.Debug().Msg("Compose action cmd: clone")
+
 			cmds, err := p.handleClone()
 			if err != nil {
 				return err
@@ -172,10 +174,16 @@ func (p *Plugin) Execute() error {
 
 			batchCmd = append(batchCmd, cmds...)
 		case GitActionCommit:
+			log.Debug().Msg("Compose action cmd: commit")
+
 			batchCmd = append(batchCmd, p.handleCommit()...)
 		case GitActionPush:
+			log.Debug().Msg("Compose action cmd: push")
+
 			batchCmd = append(batchCmd, p.handlePush()...)
 		case GitActionPages:
+			log.Debug().Msg("Compose action cmd: pages")
+
 			cmds, err := p.handlePages()
 			if err != nil {
 				return err
@@ -236,6 +244,11 @@ func (p *Plugin) handlePush() []*types.Cmd {
 func (p *Plugin) handlePages() ([]*types.Cmd, error) {
 	var cmds []*types.Cmd
 
+	log.Debug().
+		Str("src", p.Settings.Pages.Directory).
+		Str("dest", p.Settings.Repo.WorkDir).
+		Msg("handlePages")
+
 	ccmd, err := p.handleClone()
 	if err != nil {
 		return cmds, err
@@ -248,7 +261,7 @@ func (p *Plugin) handlePages() ([]*types.Cmd, error) {
 			p.Settings.Pages.Delete,
 			p.Settings.Pages.Directory,
 			p.Settings.Repo.WorkDir,
-			(log.Logger.GetLevel() == zerolog.DebugLevel),
+			(zerolog.GlobalLevel() == zerolog.DebugLevel),
 		),
 	)
 

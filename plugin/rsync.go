@@ -1,15 +1,12 @@
 package plugin
 
 import (
-	"github.com/rs/zerolog/log"
 	"github.com/thegeeklab/wp-plugin-go/v2/types"
 
 	"golang.org/x/sys/execabs"
 )
 
 func SyncDirectories(exclude []string, del bool, src, dest string, debug bool) *types.Cmd {
-	log.Debug().Msgf("Syncing directories: %s -> %s", src, dest)
-
 	args := []string{
 		"-r",
 		"--exclude",
