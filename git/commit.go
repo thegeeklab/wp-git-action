@@ -21,18 +21,18 @@ func (r *Repository) Add() *types.Cmd {
 	return cmd
 }
 
-// TestCleanTree returns non-zero if diff between index and local repository.
+// IsCleanTree returns non-zero if diff between index and local repository.
 func (r *Repository) IsCleanTree() *types.Cmd {
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(
-			gitBin,
-			"diff-index",
-			"--quiet",
-			"HEAD",
-			"--ignore-submodules",
-		),
+	args := []string{
+		"diff-index",
+		"--quiet",
+		"HEAD",
+		"--ignore-submodules",
 	}
 
+	cmd := &types.Cmd{
+		Cmd: execabs.Command(gitBin, args...),
+	}
 	cmd.Dir = r.WorkDir
 	cmd.Stdout = io.Discard
 	cmd.Stderr = io.Discard
@@ -43,10 +43,6 @@ func (r *Repository) IsCleanTree() *types.Cmd {
 
 // Commit creates a new commit with the specified commit message.
 func (r *Repository) Commit() *types.Cmd {
-	if err := r.IsCleanTree().Run(); err == nil && !r.EmptyCommit {
-		return nil
-	}
-
 	args := []string{
 		"commit",
 		"-m",

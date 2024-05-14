@@ -101,6 +101,8 @@ func (p *Plugin) Validate() error {
 }
 
 // Execute provides the implementation of the plugin.
+//
+//nolint:gocognit
 func (p *Plugin) Execute() error {
 	var err error
 
@@ -161,45 +163,49 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Repo.ConfigUserEmail())
 	batchCmd = append(batchCmd, p.Settings.Repo.ConfigSSLVerify(p.Network.InsecureSkipVerify))
 
+	if err := ExecBatch(batchCmd); err != nil {
+		return err
+	}
+
 	for _, actionStr := range p.Settings.Action.Value() {
 		action := GitAction(actionStr)
 		switch action {
 		case GitActionClone:
 			log.Debug().Msg("Compose action cmd: clone")
 
-			cmds, err := p.handleClone()
-			if err != nil {
+			if err := p.handleClone(); err != nil {
 				return err
 			}
-
-			batchCmd = append(batchCmd, cmds...)
 		case GitActionCommit:
 			log.Debug().Msg("Compose action cmd: commit")
 
-			batchCmd = append(batchCmd, p.handleCommit()...)
+			if err := p.handleCommit(); err != nil {
+				return err
+			}
 		case GitActionPush:
 			log.Debug().Msg("Compose action cmd: push")
 
-			batchCmd = append(batchCmd, p.handlePush()...)
+			if err := p.handlePush(); err != nil {
+				return err
+			}
 		case GitActionPages:
 			log.Debug().Msg("Compose action cmd: pages")
 
-			cmds, err := p.handlePages()
-			if err != nil {
+			if err := p.handleClone(); err != nil {
 				return err
 			}
 
-			batchCmd = append(batchCmd, cmds...)
-		}
-	}
+			if err := p.handlePages(); err != nil {
+				return err
+			}
 
-	for _, cmd := range batchCmd {
-		if cmd == nil {
-			continue
-		}
+			if err := p.handleCommit(); err != nil {
+				return err
+			}
 
-		if err := cmd.Run(); err != nil {
-			return err
+			if err := p.handlePush(); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -208,65 +214,57 @@ func (p *Plugin) Execute() error {
 
 // handleClone clones the remote repository into the configured working directory.
 // If the working directory is not empty, it returns an error.
-func (p *Plugin) handleClone() ([]*types.Cmd, error) {
-	var cmds []*types.Cmd
+func (p *Plugin) handleClone() error {
+	var batchCmd []*types.Cmd
 
 	if !p.Settings.Repo.IsEmpty {
-		return cmds, fmt.Errorf("%w: %s exists and not empty", ErrGitCloneDestintionNotValid, p.Settings.Repo.WorkDir)
+		return fmt.Errorf("%w: %s exists and not empty", ErrGitCloneDestintionNotValid, p.Settings.Repo.WorkDir)
 	}
 
 	if p.Settings.Repo.RemoteURL != "" {
-		cmds = append(cmds, p.Settings.Repo.RemoteAdd())
+		batchCmd = append(batchCmd, p.Settings.Repo.RemoteAdd())
 	}
 
-	cmds = append(cmds, p.Settings.Repo.FetchSource())
-	cmds = append(cmds, p.Settings.Repo.CheckoutHead())
+	batchCmd = append(batchCmd, p.Settings.Repo.FetchSource())
+	batchCmd = append(batchCmd, p.Settings.Repo.CheckoutHead())
 
-	return cmds, nil
+	return ExecBatch(batchCmd)
 }
 
 // HandleCommit commits changes locally.
-func (p *Plugin) handleCommit() []*types.Cmd {
-	var cmds []*types.Cmd
+func (p *Plugin) handleCommit() error {
+	if err := p.Settings.Repo.Add().Run(); err != nil {
+		return err
+	}
 
-	cmds = append(cmds, p.Settings.Repo.Add())
-	cmds = append(cmds, p.Settings.Repo.Commit())
+	if err := p.Settings.Repo.IsCleanTree().Run(); err == nil {
+		if !p.Settings.Repo.EmptyCommit {
+			log.Debug().Msg("Commit skipped: no changes")
 
-	return cmds
+			return nil
+		}
+	}
+
+	return p.Settings.Repo.Commit().Run()
 }
 
 // HandlePush pushs changes to remote.
-func (p *Plugin) handlePush() []*types.Cmd {
-	return []*types.Cmd{p.Settings.Repo.RemotePush()}
+func (p *Plugin) handlePush() error {
+	return p.Settings.Repo.RemotePush().Run()
 }
 
 // HandlePages syncs, commits and pushes the changes from the pages directory to the pages branch.
-func (p *Plugin) handlePages() ([]*types.Cmd, error) {
-	var cmds []*types.Cmd
-
+func (p *Plugin) handlePages() error {
 	log.Debug().
 		Str("src", p.Settings.Pages.Directory).
 		Str("dest", p.Settings.Repo.WorkDir).
 		Msg("handlePages")
 
-	ccmd, err := p.handleClone()
-	if err != nil {
-		return cmds, err
-	}
-
-	cmds = append(cmds, ccmd...)
-	cmds = append(cmds,
-		SyncDirectories(
-			p.Settings.Pages.Exclude.Value(),
-			p.Settings.Pages.Delete,
-			p.Settings.Pages.Directory,
-			p.Settings.Repo.WorkDir,
-			(zerolog.GlobalLevel() == zerolog.DebugLevel),
-		),
-	)
-
-	cmds = append(cmds, p.handleCommit()...)
-	cmds = append(cmds, p.handlePush()...)
-
-	return cmds, nil
+	return SyncDirectories(
+		p.Settings.Pages.Exclude.Value(),
+		p.Settings.Pages.Delete,
+		p.Settings.Pages.Directory,
+		p.Settings.Repo.WorkDir,
+		(zerolog.GlobalLevel() == zerolog.DebugLevel),
+	).Run()
 }
