@@ -2,29 +2,29 @@ package git
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
-	"golang.org/x/sys/execabs"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 )
 
 // RemoteRemove drops the defined remote from a git repo.
-func (r *Repository) RemoteRemove() *types.Cmd {
+func (r *Repository) RemoteRemove() *plugin_exec.Cmd {
 	args := []string{
 		"remote",
 		"rm",
 		r.RemoteName,
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 
 	return cmd
 }
 
 // RemoteAdd adds an additional remote to a git repo.
-func (r *Repository) RemoteAdd() *types.Cmd {
+func (r *Repository) RemoteAdd() *plugin_exec.Cmd {
 	args := []string{
 		"remote",
 		"add",
@@ -32,16 +32,16 @@ func (r *Repository) RemoteAdd() *types.Cmd {
 		r.RemoteURL,
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 
 	return cmd
 }
 
 // RemotePush pushs the changes from the local head to a remote branch.
-func (r *Repository) RemotePush() *types.Cmd {
+func (r *Repository) RemotePush() *plugin_exec.Cmd {
 	args := []string{
 		"push",
 		r.RemoteName,
@@ -56,9 +56,9 @@ func (r *Repository) RemotePush() *types.Cmd {
 		args = append(args, "--follow-tags")
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 
 	return cmd
