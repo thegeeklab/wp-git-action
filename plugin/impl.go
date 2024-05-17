@@ -9,9 +9,9 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/thegeeklab/wp-plugin-go/v2/file"
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
-	"github.com/thegeeklab/wp-plugin-go/v2/util"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
+	plugin_file "github.com/thegeeklab/wp-plugin-go/v3/file"
+	plugin_util "github.com/thegeeklab/wp-plugin-go/v3/util"
 )
 
 var (
@@ -106,8 +106,8 @@ func (p *Plugin) Validate() error {
 func (p *Plugin) Execute() error {
 	var err error
 
-	homeDir := util.GetUserHomeDir()
-	batchCmd := make([]*types.Cmd, 0)
+	homeDir := plugin_util.GetUserHomeDir()
+	batchCmd := make([]*plugin_exec.Cmd, 0)
 	gitEnv := []string{
 		"GIT_AUTHOR_NAME",
 		"GIT_AUTHOR_EMAIL",
@@ -143,12 +143,12 @@ func (p *Plugin) Execute() error {
 	}
 	defer os.RemoveAll(p.Settings.Repo.WorkDir)
 
-	p.Settings.Repo.IsEmpty, err = file.IsDirEmpty(p.Settings.Repo.WorkDir)
+	p.Settings.Repo.IsEmpty, err = plugin_file.IsDirEmpty(p.Settings.Repo.WorkDir)
 	if err != nil {
 		return fmt.Errorf("failed to check working directory: %w", err)
 	}
 
-	isDir, err := file.IsDir(filepath.Join(p.Settings.Repo.WorkDir, ".git"))
+	isDir, err := plugin_file.IsDir(filepath.Join(p.Settings.Repo.WorkDir, ".git"))
 	if err != nil {
 		return fmt.Errorf("failed to check working directory: %w", err)
 	}
@@ -215,7 +215,7 @@ func (p *Plugin) Execute() error {
 // handleClone clones the remote repository into the configured working directory.
 // If the working directory is not empty, it returns an error.
 func (p *Plugin) handleClone() error {
-	var batchCmd []*types.Cmd
+	var batchCmd []*plugin_exec.Cmd
 
 	if !p.Settings.Repo.IsEmpty {
 		return fmt.Errorf("%w: %s exists and not empty", ErrGitCloneDestintionNotValid, p.Settings.Repo.WorkDir)

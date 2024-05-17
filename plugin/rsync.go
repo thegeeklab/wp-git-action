@@ -1,12 +1,12 @@
 package plugin
 
 import (
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	"os"
 
-	"golang.org/x/sys/execabs"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 )
 
-func SyncDirectories(exclude []string, del bool, src, dest string, debug bool) *types.Cmd {
+func SyncDirectories(exclude []string, del bool, src, dest string, debug bool) *plugin_exec.Cmd {
 	args := []string{
 		"-r",
 		"--exclude",
@@ -41,9 +41,9 @@ func SyncDirectories(exclude []string, del bool, src, dest string, debug bool) *
 		dest,
 	)
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command("rsync", args...),
-	}
+	cmd := plugin_exec.Command("rsync", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = src
 
 	return cmd

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 )
 
 const (
@@ -30,7 +30,7 @@ func WriteNetrc(path, machine, login, password string) error {
 }
 
 // ExecBatch executes a batch of commands. If any command in the batch fails, the function will return the error.
-func ExecBatch(batchCmd []*types.Cmd) error {
+func ExecBatch(batchCmd []*plugin_exec.Cmd) error {
 	for _, cmd := range batchCmd {
 		if cmd == nil {
 			continue

@@ -1,28 +1,23 @@
 package git
 
 import (
-	"io"
+	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
-	"golang.org/x/sys/execabs"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 )
 
 // Add updates the index to match the working tree.
-func (r *Repository) Add() *types.Cmd {
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(
-			gitBin,
-			"add",
-			"--all",
-		),
-	}
+func (r *Repository) Add() *plugin_exec.Cmd {
+	cmd := plugin_exec.Command(gitBin, "add", "--all")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 
 	return cmd
 }
 
 // IsCleanTree returns non-zero if diff between index and local repository.
-func (r *Repository) IsCleanTree() *types.Cmd {
+func (r *Repository) IsCleanTree() *plugin_exec.Cmd {
 	args := []string{
 		"diff-index",
 		"--quiet",
@@ -30,19 +25,15 @@ func (r *Repository) IsCleanTree() *types.Cmd {
 		"--ignore-submodules",
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
 	cmd.Dir = r.WorkDir
-	cmd.Stdout = io.Discard
-	cmd.Stderr = io.Discard
-	cmd.SetTrace(false)
+	cmd.Trace = false
 
 	return cmd
 }
 
 // Commit creates a new commit with the specified commit message.
-func (r *Repository) Commit() *types.Cmd {
+func (r *Repository) Commit() *plugin_exec.Cmd {
 	args := []string{
 		"commit",
 		"-m",
@@ -57,9 +48,9 @@ func (r *Repository) Commit() *types.Cmd {
 		args = append(args, "--no-verify")
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 
 	return cmd

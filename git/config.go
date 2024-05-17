@@ -1,15 +1,15 @@
 package git
 
 import (
+	"os"
 	"strconv"
 
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
-	"golang.org/x/sys/execabs"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 )
 
 // ConfigAutocorrect sets the local git autocorrect configuration for the given repository.
 // The autocorrect setting determines how git handles minor typos in commands.
-func (r *Repository) ConfigAutocorrect() *types.Cmd {
+func (r *Repository) ConfigAutocorrect() *plugin_exec.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -17,17 +17,17 @@ func (r *Repository) ConfigAutocorrect() *types.Cmd {
 		r.Autocorrect,
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
-	cmd.SetTrace(false)
+	cmd.Trace = false
 
 	return cmd
 }
 
 // ConfigUserEmail sets the global git author email.
-func (r *Repository) ConfigUserEmail() *types.Cmd {
+func (r *Repository) ConfigUserEmail() *plugin_exec.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -35,17 +35,17 @@ func (r *Repository) ConfigUserEmail() *types.Cmd {
 		r.Author.Email,
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
-	cmd.SetTrace(false)
+	cmd.Trace = false
 
 	return cmd
 }
 
 // ConfigUserName configures the user.name git config setting for the given repository.
-func (r *Repository) ConfigUserName() *types.Cmd {
+func (r *Repository) ConfigUserName() *plugin_exec.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -53,17 +53,17 @@ func (r *Repository) ConfigUserName() *types.Cmd {
 		r.Author.Name,
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
-	cmd.SetTrace(false)
+	cmd.Trace = false
 
 	return cmd
 }
 
 // ConfigSSLVerify configures the http.sslVerify git config setting for the given repository.
-func (r *Repository) ConfigSSLVerify(skipVerify bool) *types.Cmd {
+func (r *Repository) ConfigSSLVerify(skipVerify bool) *plugin_exec.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -71,17 +71,17 @@ func (r *Repository) ConfigSSLVerify(skipVerify bool) *types.Cmd {
 		strconv.FormatBool(!skipVerify),
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
-	cmd.SetTrace(false)
+	cmd.Trace = false
 
 	return cmd
 }
 
 // ConfigSSHCommand sets custom SSH key.
-func (r *Repository) ConfigSSHCommand(sshKey string) *types.Cmd {
+func (r *Repository) ConfigSSHCommand(sshKey string) *plugin_exec.Cmd {
 	args := []string{
 		"config",
 		"--local",
@@ -89,11 +89,11 @@ func (r *Repository) ConfigSSHCommand(sshKey string) *types.Cmd {
 		"ssh -i " + sshKey,
 	}
 
-	cmd := &types.Cmd{
-		Cmd: execabs.Command(gitBin, args...),
-	}
+	cmd := plugin_exec.Command(gitBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
-	cmd.SetTrace(false)
+	cmd.Trace = false
 
 	return cmd
 }
