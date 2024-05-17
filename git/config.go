@@ -1,7 +1,6 @@
 package git
 
 import (
-	"os"
 	"strconv"
 
 	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
@@ -18,8 +17,6 @@ func (r *Repository) ConfigAutocorrect() *plugin_exec.Cmd {
 	}
 
 	cmd := plugin_exec.Command(gitBin, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 	cmd.Trace = false
 
@@ -36,8 +33,6 @@ func (r *Repository) ConfigUserEmail() *plugin_exec.Cmd {
 	}
 
 	cmd := plugin_exec.Command(gitBin, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 	cmd.Trace = false
 
@@ -54,8 +49,6 @@ func (r *Repository) ConfigUserName() *plugin_exec.Cmd {
 	}
 
 	cmd := plugin_exec.Command(gitBin, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 	cmd.Trace = false
 
@@ -72,8 +65,6 @@ func (r *Repository) ConfigSSLVerify(skipVerify bool) *plugin_exec.Cmd {
 	}
 
 	cmd := plugin_exec.Command(gitBin, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 	cmd.Trace = false
 
@@ -90,8 +81,6 @@ func (r *Repository) ConfigSSHCommand(sshKey string) *plugin_exec.Cmd {
 	}
 
 	cmd := plugin_exec.Command(gitBin, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	cmd.Dir = r.WorkDir
 	cmd.Trace = false
 
