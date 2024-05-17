@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	"github.com/thegeeklab/wp-plugin-go/v3/types"
 )
 
 const (
