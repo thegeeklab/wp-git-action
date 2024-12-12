@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v4/exec"
 )
 
 const (
