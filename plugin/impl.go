@@ -9,9 +9,9 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
-	plugin_file "github.com/thegeeklab/wp-plugin-go/v3/file"
-	plugin_util "github.com/thegeeklab/wp-plugin-go/v3/util"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v4/exec"
+	plugin_file "github.com/thegeeklab/wp-plugin-go/v4/file"
+	plugin_util "github.com/thegeeklab/wp-plugin-go/v4/util"
 )
 
 var (
