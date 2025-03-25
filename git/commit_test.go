@@ -24,8 +24,8 @@ func TestAdd(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.Add()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -55,8 +55,8 @@ func TestIsCleanTree(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.IsCleanTree()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -98,8 +98,8 @@ func TestCommit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.Commit()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }

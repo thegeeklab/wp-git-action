@@ -40,8 +40,8 @@ func TestRemoteRemove(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.RemoteRemove()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -74,8 +74,8 @@ func TestRemoteAdd(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.RemoteAdd()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -132,8 +132,8 @@ func TestRemotePush(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.RemotePush()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
