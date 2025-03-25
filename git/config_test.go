@@ -33,8 +33,8 @@ func TestConfigAutocorrect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigAutocorrect()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -60,8 +60,8 @@ func TestConfigUserEmail(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigUserEmail()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -87,8 +87,8 @@ func TestConfigUserName(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigUserName()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -117,8 +117,8 @@ func TestConfigSSLVerify(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigSSLVerify(tt.skipVerify)
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -141,7 +141,7 @@ func TestConfigSSHCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.ConfigSSHCommand(tt.sshKey)
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }

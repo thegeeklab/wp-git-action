@@ -51,8 +51,8 @@ func TestSyncDirectories(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := SyncDirectories(tt.exclude, tt.del, tt.src, tt.dest, tt.debug)
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.src, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.src, cmd.Dir)
 		})
 	}
 }

@@ -25,8 +25,8 @@ func TestInit(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.Init()
-			assert.Equal(t, tt.expected, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.expected, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }

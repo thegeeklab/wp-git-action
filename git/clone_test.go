@@ -33,8 +33,8 @@ func TestFetchSource(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.FetchSource()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
@@ -66,8 +66,8 @@ func TestCheckoutHead(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.repo.CheckoutHead()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.repo.WorkDir, cmd.Cmd.Dir)
+			assert.Equal(t, tt.want, cmd.Args)
+			assert.Equal(t, tt.repo.WorkDir, cmd.Dir)
 		})
 	}
 }
