@@ -9,9 +9,9 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v4/exec"
-	plugin_file "github.com/thegeeklab/wp-plugin-go/v4/file"
-	plugin_util "github.com/thegeeklab/wp-plugin-go/v4/util"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v6/exec"
+	plugin_file "github.com/thegeeklab/wp-plugin-go/v6/file"
+	plugin_util "github.com/thegeeklab/wp-plugin-go/v6/util"
 )
 
 var (
@@ -58,7 +58,7 @@ func (p *Plugin) Validate() error {
 		}
 	}
 
-	for _, actionStr := range p.Settings.Action.Value() {
+	for _, actionStr := range p.Settings.Action {
 		action := GitAction(actionStr)
 		switch action {
 		case GitActionClone:
@@ -89,7 +89,7 @@ func (p *Plugin) Validate() error {
 				return ErrPagesSourceNotSet
 			}
 
-			if len(p.Settings.Action.Value()) > 1 {
+			if len(p.Settings.Action) > 1 {
 				return ErrPagesActionNotExclusive
 			}
 		default:
@@ -167,7 +167,7 @@ func (p *Plugin) Execute() error {
 		return err
 	}
 
-	for _, actionStr := range p.Settings.Action.Value() {
+	for _, actionStr := range p.Settings.Action {
 		action := GitAction(actionStr)
 		switch action {
 		case GitActionClone:
@@ -261,7 +261,7 @@ func (p *Plugin) handlePages() error {
 		Msg("handlePages")
 
 	return SyncDirectories(
-		p.Settings.Pages.Exclude.Value(),
+		p.Settings.Pages.Exclude,
 		p.Settings.Pages.Delete,
 		p.Settings.Pages.Directory,
 		p.Settings.Repo.WorkDir,
