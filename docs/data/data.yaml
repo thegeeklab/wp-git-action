@@ -139,6 +139,13 @@ properties:
     type: string
     required: false
 
+  - name: cleanup
+    description: |
+      Delete the working directory after the git action.
+    type: bool
+    defaultValue: true
+    required: false
+
   - name: remote_url
     description: |
       Url of the remote repository.

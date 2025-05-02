@@ -141,7 +141,10 @@ func (p *Plugin) Execute() error {
 	if err := os.MkdirAll(p.Settings.Repo.WorkDir, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create working directory: %w", err)
 	}
-	defer os.RemoveAll(p.Settings.Repo.WorkDir)
+
+	if p.Settings.Repo.Cleanup {
+		defer os.RemoveAll(p.Settings.Repo.WorkDir)
+	}
 
 	p.Settings.Repo.IsEmpty, err = plugin_file.IsDirEmpty(p.Settings.Repo.WorkDir)
 	if err != nil {
