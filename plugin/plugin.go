@@ -151,6 +151,14 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Repo.WorkDir,
 			Category:    category,
 		},
+		&cli.BoolFlag{
+			Name:        "cleanup",
+			Usage:       "delete the working directory after the git action",
+			Sources:     cli.EnvVars("PLUGIN_CLEANUP"),
+			Destination: &settings.Repo.Cleanup,
+			Value:       true,
+			Category:    category,
+		},
 		&cli.StringFlag{
 			Name:        "commit-message",
 			Usage:       "commit message",

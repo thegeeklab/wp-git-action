@@ -19,6 +19,7 @@ type Repository struct {
 	ForcePush      bool
 	WorkDir        string
 	IsEmpty        bool
+	Cleanup        bool
 
 	Author Author
 }
