@@ -18,6 +18,7 @@ LABEL org.opencontainers.image.source="https://github.com/thegeeklab/wp-git-acti
 LABEL org.opencontainers.image.documentation="https://github.com/thegeeklab/wp-git-action"
 
 RUN apk --update add --no-cache git rsync && \
+    apk upgrade --no-cache zlib && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/*
 
