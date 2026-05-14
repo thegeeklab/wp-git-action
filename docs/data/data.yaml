@@ -83,6 +83,19 @@ properties:
     defaultValue: "[skip ci] commit dirty state"
     required: false
 
+  - name: commit_message_from
+    description: |
+      Read the commit message from the named environment variable.
+
+      Useful for adopting the message of the triggering CI commit (e.g. `CI_COMMIT_MESSAGE` on Woodpecker)
+      without running into YAML substitution and escaping problems for values containing `:` or `"`.
+
+      When set and the named variable resolves to a non-empty value, that value overrides `message`. If
+      the variable is unset or empty, `message` is used as a fallback (either an explicit value or the
+      static default).
+    type: string
+    required: false
+
   - name: netrc_machine
     description: |
       Netrc remote machine name.

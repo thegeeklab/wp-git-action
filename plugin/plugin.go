@@ -21,6 +21,8 @@ type Settings struct {
 	Action []string
 	SSHKey string
 
+	CommitMessageFrom string
+
 	Netrc Netrc
 	Pages Pages
 	Repo  git.Repository
@@ -165,6 +167,13 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Sources:     cli.EnvVars("PLUGIN_MESSAGE"),
 			Destination: &settings.Repo.CommitMsg,
 			Value:       "[skip ci] commit dirty state",
+			Category:    category,
+		},
+		&cli.StringFlag{
+			Name:        "commit-message-from",
+			Usage:       "read the commit message from the named environment variable (e.g. CI_COMMIT_MESSAGE) when 'commit-message' is not explicitly set",
+			Sources:     cli.EnvVars("PLUGIN_COMMIT_MESSAGE_FROM"),
+			Destination: &settings.CommitMessageFrom,
 			Category:    category,
 		},
 		&cli.BoolFlag{

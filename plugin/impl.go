@@ -50,6 +50,16 @@ func (p *Plugin) Validate() error {
 	p.Settings.Repo.Autocorrect = "never"
 	p.Settings.Repo.RemoteName = "origin"
 
+	// If commit-message-from names an environment variable that resolves to a
+	// non-empty value, adopt that value as the commit message. The 'message'
+	// setting (explicit or default) acts as a fallback when the env var is
+	// unset or empty.
+	if p.Settings.CommitMessageFrom != "" {
+		if v := os.Getenv(p.Settings.CommitMessageFrom); v != "" {
+			p.Settings.Repo.CommitMsg = v
+		}
+	}
+
 	if p.Settings.Repo.WorkDir == "" {
 		p.Settings.Repo.WorkDir, err = os.Getwd()
 		if err != nil {
