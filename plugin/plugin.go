@@ -171,7 +171,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 		},
 		&cli.StringFlag{
 			Name:        "commit-message-from",
-			Usage:       "read the commit message from the named environment variable (e.g. CI_COMMIT_MESSAGE) when 'commit-message' is not explicitly set",
+			Usage:       "name of an environment variable to read the commit message from",
 			Sources:     cli.EnvVars("PLUGIN_COMMIT_MESSAGE_FROM"),
 			Destination: &settings.CommitMessageFrom,
 			Category:    category,

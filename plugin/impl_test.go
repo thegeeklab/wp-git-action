@@ -9,6 +9,7 @@ import (
 
 func TestValidate_CommitMessageFrom(t *testing.T) {
 	const ciVar = "TEST_CI_COMMIT_MESSAGE"
+
 	const staticDefault = "[skip ci] commit dirty state"
 
 	tests := []struct {
