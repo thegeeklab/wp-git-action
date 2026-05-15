@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -55,7 +56,7 @@ func (p *Plugin) Validate() error {
 	// setting (explicit or default) acts as a fallback when the env var is
 	// unset or empty.
 	if p.Settings.CommitMessageFrom != "" {
-		if v := os.Getenv(p.Settings.CommitMessageFrom); v != "" {
+		if v := strings.TrimSpace(os.Getenv(p.Settings.CommitMessageFrom)); v != "" {
 			p.Settings.Repo.CommitMsg = v
 		}
 	}

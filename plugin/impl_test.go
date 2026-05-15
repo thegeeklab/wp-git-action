@@ -19,31 +19,38 @@ func TestValidate_CommitMessageFrom(t *testing.T) {
 		wantMsg           string
 	}{
 		{
-			name:              "from-flag unset leaves default",
+			name:              "commit-message-from unset leaves default",
 			commitMessageFrom: "",
 			initialMsg:        staticDefault,
 			wantMsg:           staticDefault,
 		},
 		{
-			name:              "from-flag set but env empty falls back to message",
+			name:              "commit-message-from set but env empty falls back to message",
 			commitMessageFrom: ciVar,
 			envValue:          "",
 			initialMsg:        "scheduled sync",
 			wantMsg:           "scheduled sync",
 		},
 		{
-			name:              "from-flag set and env populated overrides default",
+			name:              "commit-message-from set and env populated overrides default",
 			commitMessageFrom: ciVar,
 			envValue:          "feat(api): add motion photo facet",
 			initialMsg:        staticDefault,
 			wantMsg:           "feat(api): add motion photo facet",
 		},
 		{
-			name:              "from-flag set and env populated overrides explicit message",
+			name:              "commit-message-from set and env populated overrides explicit message",
 			commitMessageFrom: ciVar,
 			envValue:          "from CI",
 			initialMsg:        "explicit message",
 			wantMsg:           "from CI",
+		},
+		{
+			name:              "commit-message-from set but env is whitespace falls back to message",
+			commitMessageFrom: ciVar,
+			envValue:          "  \n\t  ",
+			initialMsg:        "scheduled sync",
+			wantMsg:           "scheduled sync",
 		},
 	}
 
