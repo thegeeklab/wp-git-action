@@ -10,9 +10,9 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v6/exec"
-	plugin_file "github.com/thegeeklab/wp-plugin-go/v6/file"
-	plugin_util "github.com/thegeeklab/wp-plugin-go/v6/util"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v7/exec"
+	plugin_file "github.com/thegeeklab/wp-plugin-go/v7/file"
+	plugin_util "github.com/thegeeklab/wp-plugin-go/v7/util"
 )
 
 var (
@@ -114,7 +114,10 @@ func (p *Plugin) Validate() error {
 //
 //nolint:gocognit
 func (p *Plugin) Execute() error {
-	var err error
+	network, err := p.GetNetwork()
+	if err != nil {
+		return fmt.Errorf("error while getting network configuration: %w", err)
+	}
 
 	homeDir := plugin_util.GetUserHomeDir()
 	batchCmd := make([]*plugin_exec.Cmd, 0)
@@ -174,7 +177,7 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Repo.ConfigAutocorrect())
 	batchCmd = append(batchCmd, p.Settings.Repo.ConfigUserName())
 	batchCmd = append(batchCmd, p.Settings.Repo.ConfigUserEmail())
-	batchCmd = append(batchCmd, p.Settings.Repo.ConfigSSLVerify(p.Network.InsecureSkipVerify))
+	batchCmd = append(batchCmd, p.Settings.Repo.ConfigSSLVerify(network.InsecureSkipVerify))
 
 	if err := ExecBatch(batchCmd); err != nil {
 		return err
