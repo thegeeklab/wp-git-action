@@ -2,13 +2,14 @@ package plugin
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/thegeeklab/wp-git-action/git"
-	plugin_base "github.com/thegeeklab/wp-plugin-go/v6/plugin"
+	plugin_base "github.com/thegeeklab/wp-plugin-go/v7/plugin"
 	"github.com/urfave/cli/v3"
 )
 
-//go:generate go run ../internal/doc/main.go -output=../docs/data/data-raw.yaml
+//go:generate go run ../hack/docs-gen/main.go -output=../docs/data/data.yaml
 
 // Plugin implements provide the plugin.
 type Plugin struct {
@@ -48,9 +49,13 @@ func New(e plugin_base.ExecuteFunc, build ...string) *Plugin {
 	}
 
 	options := plugin_base.Options{
-		Name:                "wp-git-action",
-		Description:         "Perform git actions",
-		Flags:               Flags(p.Settings, plugin_base.FlagsPluginCategory),
+		Name:        "wp-git-action",
+		Description: "Perform git actions",
+		Flags: slices.Concat(
+			plugin_base.LoggingFlags(plugin_base.FlagsPluginCategory),
+			plugin_base.NetworkFlags(plugin_base.FlagsPluginCategory),
+			Flags(p.Settings, plugin_base.FlagsPluginCategory),
+		),
 		Execute:             p.run,
 		HideWoodpeckerFlags: true,
 	}
@@ -75,6 +80,16 @@ func New(e plugin_base.ExecuteFunc, build ...string) *Plugin {
 // Flags returns a slice of CLI flags for the plugin.
 func Flags(settings *Settings, category string) []cli.Flag {
 	return []cli.Flag{
+		// Git action to execute.
+		//
+		// Supported actions: `clone | commit | push | pages`. Specified actions are executed in the specified order
+		//
+		// - **clone:** Clones the repository in `remote_url` and checks out the `branch` to `path`.
+		// - **commit:** Adds a commit to the default repository or the repository in `remote_url`.
+		// - **push:** Pushes all commits to the default repository or the repository set in `remote_url`.
+		// - **pages:** The `pages` action is a special action that cannot be combined with other actions. It is intended for
+		//   use for GitHub pages. It synchronizes the contents of `pages_directory` with the target `branch` using `rsync`
+		//   and pushes the changes automatically.
 		&cli.StringSliceFlag{
 			Name:        "action",
 			Usage:       "git action to execute",
@@ -83,6 +98,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Required:    true,
 			Category:    category,
 		},
+		// Git author name.
 		&cli.StringFlag{
 			Name:        "author-name",
 			Usage:       "git author name",
@@ -91,6 +107,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Required:    true,
 			Category:    category,
 		},
+		// Git author email.
 		&cli.StringFlag{
 			Name:        "author-email",
 			Usage:       "git author email",
@@ -100,6 +117,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Category:    category,
 		},
 
+		// Netrc remote machine name.
 		&cli.StringFlag{
 			Name:        "netrc.machine",
 			Usage:       "netrc remote machine name",
@@ -108,6 +126,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       "github.com",
 			Category:    category,
 		},
+		// Netrc login user on the remote machine.
 		&cli.StringFlag{
 			Name:        "netrc.username",
 			Usage:       "netrc login user on the remote machine",
@@ -116,6 +135,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       "token",
 			Category:    category,
 		},
+		// Netrc login password on the remote machine.
 		&cli.StringFlag{
 			Name:        "netrc.password",
 			Usage:       "netrc login password on the remote machine",
@@ -123,6 +143,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Netrc.Password,
 			Category:    category,
 		},
+		// Ssh private key for the remote repository.
 		&cli.StringFlag{
 			Name:        "ssh-key",
 			Usage:       "ssh private key for the remote repository",
@@ -131,6 +152,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Category:    category,
 		},
 
+		// Url of the remote repository.
 		&cli.StringFlag{
 			Name:        "remote-url",
 			Usage:       "url of the remote repository",
@@ -138,6 +160,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Repo.RemoteURL,
 			Category:    category,
 		},
+		// Name of the git source branch.
 		&cli.StringFlag{
 			Name:        "branch",
 			Usage:       "name of the git source branch",
@@ -146,6 +169,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       "main",
 			Category:    category,
 		},
+		// Path to clone git repository.
 		&cli.StringFlag{
 			Name:        "path",
 			Usage:       "path to clone git repository",
@@ -153,6 +177,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Repo.WorkDir,
 			Category:    category,
 		},
+		// Delete the working directory after the git action.
 		&cli.BoolFlag{
 			Name:        "cleanup",
 			Usage:       "delete the working directory after the git action",
@@ -161,6 +186,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       true,
 			Category:    category,
 		},
+		// Commit message.
 		&cli.StringFlag{
 			Name:        "commit-message",
 			Usage:       "commit message",
@@ -169,6 +195,14 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       "[skip ci] commit dirty state",
 			Category:    category,
 		},
+		// Read the commit message from the named environment variable.
+		//
+		// Useful for adopting the message of the triggering CI commit (e.g. `CI_COMMIT_MESSAGE` on Woodpecker)
+		// without running into YAML substitution and escaping problems for values containing `:` or `"`.
+		//
+		// When set and the named variable resolves to a non-empty value, that value overrides `message`. If
+		// the variable is unset or empty, `message` is used as a fallback (either an explicit value or the
+		// static default).
 		&cli.StringFlag{
 			Name:        "commit-message-from",
 			Usage:       "name of an environment variable to read the commit message from",
@@ -176,6 +210,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.CommitMessageFrom,
 			Category:    category,
 		},
+		// Enable force push to remote repository.
 		&cli.BoolFlag{
 			Name:        "force-push",
 			Usage:       "enable force push to remote repository",
@@ -184,6 +219,10 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       false,
 			Category:    category,
 		},
+		// Follow tags for pushes to remote repository.
+		//
+		// Push all the `refs` that would be pushed without this option, and also push annotated tags
+		// in `refs/tags` that are missing from the remote.
 		&cli.BoolFlag{
 			Name:        "followtags",
 			Usage:       "follow tags for pushes to remote repository",
@@ -192,6 +231,10 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       false,
 			Category:    category,
 		},
+		// Allow empty commits.
+		//
+		// Usually recording a commit that has the exact same tree as its sole parent commit is a mistake,
+		// and those commits are not allowed by default.
 		&cli.BoolFlag{
 			Name:        "empty-commit",
 			Usage:       "allow empty commits",
@@ -200,6 +243,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       false,
 			Category:    category,
 		},
+		// Bypass the pre-commit and commit-msg hooks.
 		&cli.BoolFlag{
 			Name:        "no-verify",
 			Usage:       "bypass the pre-commit and commit-msg hooks",
@@ -208,6 +252,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       false,
 			Category:    category,
 		},
+		// Source directory to be synchronized with the pages branch.
 		&cli.StringFlag{
 			Name:        "pages.directory",
 			Usage:       "source directory to be synchronized with the pages banch",
@@ -216,6 +261,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Value:       "docs/",
 			Category:    category,
 		},
+		// Files or directories to exclude from the pages rsync command.
 		&cli.StringSliceFlag{
 			Name:        "pages.exclude",
 			Usage:       "files or directories to exclude from the pages rsync command",
@@ -223,6 +269,10 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Pages.Exclude,
 			Category:    category,
 		},
+		// Add delete flag to pages rsync command.
+		//
+		// When set to `true`, the `--delete` flag is added to the rsync command to remove files
+		// from the branch that do not exist in the `pages_directory` either.
 		&cli.BoolFlag{
 			Name:        "pages.delete",
 			Usage:       "add delete flag to pages rsync command",

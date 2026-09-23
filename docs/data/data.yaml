@@ -9,8 +9,9 @@ properties:
       - **clone:** Clones the repository in `remote_url` and checks out the `branch` to `path`.
       - **commit:** Adds a commit to the default repository or the repository in `remote_url`.
       - **push:** Pushes all commits to the default repository or the repository set in `remote_url`.
-      - **pages:** The `pages` action is a special action that cannot be combined with other actions. It is intended for use for
-        GitHub pages. It synchronizes the contents of `pages_directory` with the target `branch` using `rsync` and pushes the changes automatically.
+      - **pages:** The `pages` action is a special action that cannot be combined with other actions. It is intended for
+        use for GitHub pages. It synchronizes the contents of `pages_directory` with the target `branch` using `rsync`
+        and pushes the changes automatically.
     type: list
     required: true
 
@@ -31,6 +32,26 @@ properties:
       Name of the git source branch.
     type: string
     defaultValue: "main"
+    required: false
+
+  - name: cleanup
+    description: |
+      Delete the working directory after the git action.
+    type: bool
+    defaultValue: true
+    required: false
+
+  - name: commit_message_from
+    description: |
+      Read the commit message from the named environment variable.
+
+      Useful for adopting the message of the triggering CI commit (e.g. `CI_COMMIT_MESSAGE` on Woodpecker)
+      without running into YAML substitution and escaping problems for values containing `:` or `"`.
+
+      When set and the named variable resolves to a non-empty value, that value overrides `message`. If
+      the variable is unset or empty, `message` is used as a fallback (either an explicit value or the
+      static default).
+    type: string
     required: false
 
   - name: empty_commit
@@ -63,8 +84,6 @@ properties:
   - name: insecure_skip_verify
     description: |
       Skip SSL verification.
-
-      Activating this option is insecure and should be avoided in most cases.
     type: bool
     defaultValue: false
     required: false
@@ -81,19 +100,6 @@ properties:
       Commit message.
     type: string
     defaultValue: "[skip ci] commit dirty state"
-    required: false
-
-  - name: commit_message_from
-    description: |
-      Read the commit message from the named environment variable.
-
-      Useful for adopting the message of the triggering CI commit (e.g. `CI_COMMIT_MESSAGE` on Woodpecker)
-      without running into YAML substitution and escaping problems for values containing `:` or `"`.
-
-      When set and the named variable resolves to a non-empty value, that value overrides `message`. If
-      the variable is unset or empty, `message` is used as a fallback (either an explicit value or the
-      static default).
-    type: string
     required: false
 
   - name: netrc_machine
@@ -150,13 +156,6 @@ properties:
     description: |
       Path to clone git repository.
     type: string
-    required: false
-
-  - name: cleanup
-    description: |
-      Delete the working directory after the git action.
-    type: bool
-    defaultValue: true
     required: false
 
   - name: remote_url
