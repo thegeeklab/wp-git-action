@@ -3,7 +3,7 @@ package git
 import (
 	"strconv"
 
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v7/exec"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v8/exec"
 )
 
 // ConfigAutocorrect sets the local git autocorrect configuration for the given repository.
