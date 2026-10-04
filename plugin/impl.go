@@ -16,12 +16,19 @@ import (
 )
 
 var (
-	ErrAuthSourceNotSet           = errors.New("either SSH key or netrc password is required")
-	ErrPagesDirectoryNotExist     = errors.New("pages directory must exist")
-	ErrPagesDirectoryNotValid     = errors.New("pages directory not valid")
-	ErrPagesSourceNotSet          = errors.New("pages source directory must be set")
-	ErrPagesActionNotExclusive    = errors.New("pages action is mutual exclusive")
-	ErrActionUnknown              = errors.New("action not found")
+	// ErrAuthSourceNotSet is returned when a push or pages action is configured without an SSH key or netrc password.
+	ErrAuthSourceNotSet = errors.New("either SSH key or netrc password is required")
+	// ErrPagesDirectoryNotExist is returned when the pages directory does not exist.
+	ErrPagesDirectoryNotExist = errors.New("pages directory must exist")
+	// ErrPagesDirectoryNotValid is returned when the pages directory exists but is not a directory.
+	ErrPagesDirectoryNotValid = errors.New("pages directory not valid")
+	// ErrPagesSourceNotSet is returned when the pages action is configured without a source directory.
+	ErrPagesSourceNotSet = errors.New("pages source directory must be set")
+	// ErrPagesActionNotExclusive is returned when the pages action is combined with other actions.
+	ErrPagesActionNotExclusive = errors.New("pages action is mutual exclusive")
+	// ErrActionUnknown is returned when an unsupported git action is configured.
+	ErrActionUnknown = errors.New("action not found")
+	// ErrGitCloneDestintionNotValid is returned when the clone destination already exists and is not empty.
 	ErrGitCloneDestintionNotValid = errors.New("destination not valid")
 )
 
